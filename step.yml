@@ -1,0 +1,42 @@
+title: Gradle Unit Test
+summary: |-
+  Runs Gradle Unit Tests
+description: |-
+  Runs Gradle Unit Tests
+website: https://github.com/bitrise-io/steps-gradle-unit-test
+source_code_url: https://github.com/bitrise-io/steps-gradle-unit-test
+support_url: https://github.com/bitrise-io/steps-gradle-unit-test/issues
+host_os_tags:
+  - "osx-10.10"
+project_type_tags:
+  - android
+type_tags:
+  - unit test
+  - gradle
+is_requires_admin_user: false
+is_always_run: false
+is_skippable: false
+deps:
+  check_only:
+  - name: gradle
+dependencies:
+  - manager: _
+    name: gradle
+  - manager: brew
+    name: go
+inputs:
+  - workdir: $BITRISE_SOURCE_DIR
+    opts:
+      title: "Working directory"
+      description: |
+        Working directory of the step.
+        You can leave it empty to don't change it.
+      is_required: false
+      is_expand: true
+outputs:
+- BITRISE_GRADLE_TEST_RESULT:
+  opts:
+    title: Result of the tests. 'succeeded' or 'failed'.
+    value_options:
+    - succeeded
+    - failed
