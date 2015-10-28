@@ -1,14 +1,10 @@
 #!/bin/bash
+set -e
+
 if [ ! -f "gradlew" ]; then
-    gradle build connectedCheck
-else
-	./gradlew build connectedCheck
+    echo "\e[31mDidn't find a gradlew file in the root directory\e[0m"
+    exit 0
 fi
 
-if [ "$?" = "0" ]; then
-	envman aadd --key BITRISE_GRADLE_TEST_RESULT --value "succeeded"
-	exit 0
-else
-	envman aadd --key BITRISE_GRADLE_TEST_RESULT --value "failed"
-	exit 1
-fi
+
+./gradlew test --continue

@@ -2,8 +2,6 @@
 
 Step for running Gradle Unit Test
 
-The step will call `./gradlew build connectedCheck` if it found a `gradlew` file otherwise it will fallback to `gradle build connectedCheck`.
-
 ## How to use this Step
 
 Can be run directly with the [bitrise CLI](https://github.com/bitrise-io/bitrise),
