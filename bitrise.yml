@@ -17,7 +17,6 @@ workflows:
         inputs:
         - content: envman add --key BITRISE_SOURCE_DIR --value "${SOURCE_ROOT_PATH}"
     - path::./:
-        inputs:
     - script:
         title: Output test
         is_always_run: true

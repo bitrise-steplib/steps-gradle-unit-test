@@ -14,6 +14,6 @@ else
 	envman add --key "BITRISE_GRADLE_TEST_RESULT" --value "failed"
 fi
 
-echo "BITRISE_GRADLE_TEST_RESULT added to the environment with value ${BITRISE_GRADLE_TEST_RESULT}"
-exit return_code
+echo "BITRISE_GRADLE_TEST_RESULT added to the environment with value ${return_code}"
+exit ${return_code}
 

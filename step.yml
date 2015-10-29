@@ -19,11 +19,6 @@ is_skippable: false
 deps:
   check_only:
   - name: gradle
-deps:
-  - manager: _
-    name: gradle
-  - manager: brew
-    name: go
 inputs:
   - workdir: $BITRISE_SOURCE_DIR
     opts:
