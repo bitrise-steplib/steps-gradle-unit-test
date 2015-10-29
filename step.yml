@@ -7,7 +7,7 @@ website: https://github.com/bitrise-io/steps-gradle-unit-test
 source_code_url: https://github.com/bitrise-io/steps-gradle-unit-test
 support_url: https://github.com/bitrise-io/steps-gradle-unit-test/issues
 host_os_tags:
-  - "osx-10.10"
+  - "ubuntu"
 project_type_tags:
   - android
 type_tags:
@@ -16,9 +16,6 @@ type_tags:
 is_requires_admin_user: false
 is_always_run: false
 is_skippable: false
-deps:
-  check_only:
-  - name: gradle
 inputs:
   - workdir: $BITRISE_SOURCE_DIR
     opts:
@@ -33,7 +30,7 @@ inputs:
       title: "Test task"
       description: |
         The test task to execute by gradlew
-      is_required: false
+      is_required: true
       is_expand: true
   - unit_test_flags: "--continue"
     opts:

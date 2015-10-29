@@ -5,6 +5,11 @@ if [ ! -f "gradlew" ] ; then
     exit 1
 fi
 
+if [ -z "${unit_test_task}" ] ; then
+    printf "\e[31munit_test_task was not defined\e[0m\n"
+    exit 1
+fi
+
 ./gradlew ${unit_test_task} ${unit_test_flags}
 return_code=$?
 
