@@ -1,8 +1,8 @@
 #!/bin/bash
 
 if [ ! -f "gradlew" ] ; then
-    echo "\e[31mDidn't find a gradlew file in the root directory\e[0m"
-    exit 0
+    printf "\e[31mDidn't find a gradlew file in the root directory\e[0m\n"
+    exit 1
 fi
 
 ./gradlew ${unit_test_task} ${unit_test_flags}
