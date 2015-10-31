@@ -25,6 +25,13 @@ inputs:
         You can leave it empty to don't change it.
       is_required: false
       is_expand: true
+  - gradlew_file_path: "./gradlew"
+    opts:
+      title: "Path for the gradlew file"
+      description: |
+        Path for the gradlew file
+      is_required: true
+      is_expand: true
   - unit_test_task: "test"
     opts:
       title: "Test task"
