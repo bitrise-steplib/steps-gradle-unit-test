@@ -10,6 +10,12 @@ if [ ! -f "${gradlew_file_path}" ] ; then
     exit 1
 fi
 
+if [ ! -x "$gradlew_file_path" ] ; then
+	echo " (i) Missing executable permission on gradlew file, adding it now. Path: $gradlew_file_path"
+
+	chmod +x "$gradlew_file_path"
+fi
+
 if [ -z "${unit_test_task}" ] ; then
     printf "\e[31munit_test_task was not defined\e[0m\n"
     exit 1
