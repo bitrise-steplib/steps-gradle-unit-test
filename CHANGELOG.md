@@ -1,6 +1,11 @@
-## Changelog (Current version: 1.0.0)
+## Changelog (Current version: 1.0.1)
 
 -----------------
+
+### 1.0.1 (2016 Oct 20)
+
+* [5aaa246] prepare for 1.0.1
+* [c857c9e] removed unused work-dir option (#4)
 
 ### 1.0.0 (2016 Oct 20)
 
