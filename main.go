@@ -14,22 +14,20 @@ import (
 
 // ConfigsModel ...
 type ConfigsModel struct {
-	GradleFile       string
-	UnitTestTasks    string
-	GradlewPath      string
-	UnitTestFlags    string
-	WorkingDirectory string
+	GradleFile    string
+	UnitTestTasks string
+	GradlewPath   string
+	UnitTestFlags string
 
 	DeployDir string
 }
 
 func createConfigsModelFromEnvs() ConfigsModel {
 	return ConfigsModel{
-		GradleFile:       os.Getenv("gradle_file"),
-		UnitTestTasks:    os.Getenv("unit_test_task"),
-		GradlewPath:      os.Getenv("gradlew_file_path"),
-		UnitTestFlags:    os.Getenv("unit_test_flags"),
-		WorkingDirectory: os.Getenv("workdir"),
+		GradleFile:    os.Getenv("gradle_file"),
+		UnitTestTasks: os.Getenv("unit_test_task"),
+		GradlewPath:   os.Getenv("gradlew_file_path"),
+		UnitTestFlags: os.Getenv("unit_test_flags"),
 
 		DeployDir: os.Getenv("BITRISE_DEPLOY_DIR"),
 	}
@@ -41,7 +39,6 @@ func (configs ConfigsModel) print() {
 	log.Detail("- UnitTestTasks: %s", configs.UnitTestTasks)
 	log.Detail("- GradlewPath: %s", configs.GradlewPath)
 	log.Detail("- UnitTestFlags: %s", configs.UnitTestFlags)
-	log.Detail("- WorkingDirectory: %s", configs.WorkingDirectory)
 
 	log.Detail("- DeployDir: %s", configs.DeployDir)
 }

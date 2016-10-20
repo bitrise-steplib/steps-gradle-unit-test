@@ -50,12 +50,6 @@ inputs:
       title: "Test flags"
       description: |
         Use this flag to execute tests for only a couple of files like: `--tests='*.MyTestClass'`
-  - workdir: $BITRISE_SOURCE_DIR
-    opts:
-      title: "Working directory"
-      description: |
-        Working directory of the step.
-        You can leave it empty to don't change it.
 outputs:
 - BITRISE_GRADLE_TEST_RESULT:
   opts:
