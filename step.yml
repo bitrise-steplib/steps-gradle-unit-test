@@ -29,9 +29,9 @@ toolkit:
 inputs:
   - gradle_file: $GRADLE_BUILD_FILE_PATH
     opts:
-      title: Path to the gradle file to use
+      title: Optional path to the gradle build file to use
       description: |
-        Path to the gradle file to use
+        Optional path to the gradle build file to use
       is_required: true
   - unit_test_task: "test"
     opts:
