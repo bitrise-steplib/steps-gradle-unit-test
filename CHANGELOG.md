@@ -1,6 +1,11 @@
-## Changelog (Current version: 1.0.1)
+## Changelog (Current version: 1.0.2)
 
 -----------------
+
+### 1.0.2 (2017 Jul 04)
+
+* [2a83688] Prepare for 1.0.2
+* [b9e85bf] Gradle build file made optional (#5)
 
 ### 1.0.1 (2016 Oct 20)
 
@@ -30,4 +35,4 @@
 
 -----------------
 
-Updated: 2016 Oct 20
+Updated: 2017 Jul 04
