@@ -31,7 +31,6 @@ inputs:
       title: Optional path to the gradle build file to use
       description: |
         Optional path to the gradle build file to use
-      is_required: true
   - unit_test_task: "test"
     opts:
       title: "Test task"
