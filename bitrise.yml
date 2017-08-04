@@ -3,7 +3,7 @@ default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 
 app:
   envs:
-  - RELEASE_VERSION: 1.0.2
+  - RELEASE_VERSION: 1.0.3
 
 workflows:
   ci:
@@ -18,7 +18,7 @@ workflows:
     envs:
     - SAMPLE_APP_URL: https://github.com/bitrise-samples/sample-apps-android-sdk22.git
     - GRADLE_BUILD_FILE_PATH: ./build.gradle
-    - GRADLEW_PATH: ./gradlew    
+    - GRADLEW_PATH: ./gradlew
     after_run:
     - _common
 
@@ -27,7 +27,7 @@ workflows:
     envs:
     - SAMPLE_APP_URL: https://github.com/bitrise-samples/android-empty-library.git
     - GRADLE_BUILD_FILE_PATH: ""
-    - GRADLEW_PATH: ./gradlew    
+    - GRADLEW_PATH: ./gradlew
     after_run:
     - _common
 
