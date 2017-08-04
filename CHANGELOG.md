@@ -1,6 +1,12 @@
-## Changelog (Current version: 1.0.2)
+## Changelog (Current version: 1.0.3)
 
 -----------------
+
+### 1.0.3 (2017 Aug 04)
+
+* [27b397b] RELEASE_VERSION: 1.0.3
+* [2d1584b] Merge pull request #6 from DroidsOnRoids/optional_buildfile_yml
+* [3e8e243] step.yml updated to match build file requirement changes from #5
 
 ### 1.0.2 (2017 Jul 04)
 
@@ -35,4 +41,4 @@
 
 -----------------
 
-Updated: 2017 Jul 04
+Updated: 2017 Aug 04
