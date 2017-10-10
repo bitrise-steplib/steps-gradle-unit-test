@@ -24,11 +24,8 @@ type ConfigsModel struct {
 	UnitTestTasks string
 	GradlewPath   string
 	UnitTestFlags string
-
-	// Other configs
-	DeployDir string
-	// Cache configs
-	CacheLevel string
+	DeployDir     string
+	CacheLevel    string
 }
 
 func createConfigsModelFromEnvs() ConfigsModel {
@@ -37,10 +34,8 @@ func createConfigsModelFromEnvs() ConfigsModel {
 		UnitTestTasks: os.Getenv("unit_test_task"),
 		GradlewPath:   os.Getenv("gradlew_file_path"),
 		UnitTestFlags: os.Getenv("unit_test_flags"),
-		//
-		DeployDir: os.Getenv("BITRISE_DEPLOY_DIR"),
-		//
-		CacheLevel: os.Getenv("cache_level"),
+		DeployDir:     os.Getenv("BITRISE_DEPLOY_DIR"),
+		CacheLevel:    os.Getenv("cache_level"),
 	}
 }
 
