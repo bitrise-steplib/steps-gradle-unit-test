@@ -1,6 +1,11 @@
-## Changelog (Current version: 1.0.3)
+## Changelog (Current version: 1.0.4)
 
 -----------------
+
+### 1.0.4 (2017 Oct 10)
+
+* [f54f5a8] Prepare for 1.0.4
+* [3160d9c] add feature: Automatically update the cache path (#8)
 
 ### 1.0.3 (2017 Aug 04)
 
@@ -41,4 +46,4 @@
 
 -----------------
 
-Updated: 2017 Aug 04
+Updated: 2017 Oct 10
