@@ -48,6 +48,19 @@ inputs:
       title: "Test flags"
       description: |
         Use this flag to execute tests for only a couple of files like: `--tests='*.MyTestClass'`
+  - cache_level: "all"
+    opts:
+      category: Debug
+      title: Set the level of cache
+      description: |-
+        `all` - will cache build-cache and dependencies
+        `only deps` - will cache dependencies only
+        `none` - won't cache any of the above
+      is_required: true
+      value_options:
+      - "all"
+      - "only deps"
+      - "none"
 outputs:
 - BITRISE_GRADLE_TEST_RESULT:
   opts:
