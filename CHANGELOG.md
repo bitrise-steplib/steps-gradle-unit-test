@@ -1,6 +1,10 @@
-## Changelog (Current version: 1.0.4)
+## Changelog (Current version: 1.0.5)
 
 -----------------
+
+### 1.0.5 (2018 Feb 22)
+
+* [0a86670] Prepare for 1.0.5
 
 ### 1.0.4 (2017 Oct 10)
 
@@ -46,4 +50,4 @@
 
 -----------------
 
-Updated: 2017 Oct 10
+Updated: 2018 Feb 22
