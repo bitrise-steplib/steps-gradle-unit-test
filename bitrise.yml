@@ -12,6 +12,7 @@ workflows:
     after_run:
     - test
     - test-no-root-buildfile
+    - test-gradle-kts
 
   test:
     description: "Test with all inputs defined"
@@ -27,6 +28,15 @@ workflows:
     envs:
     - SAMPLE_APP_URL: https://github.com/bitrise-samples/android-empty-library.git
     - GRADLE_BUILD_FILE_PATH: ""
+    - GRADLEW_PATH: ./gradlew
+    after_run:
+    - _common
+
+  test-gradle-kts:
+    description: "Test Gradle Kotlin DSl support"
+    envs:
+    - SAMPLE_APP_URL: https://github.com/bitrise-samples/android-gradle-kotlin-dsl.git
+    - GRADLE_BUILD_FILE_PATH: "./build.gradle.kts"
     - GRADLEW_PATH: ./gradlew
     after_run:
     - _common
