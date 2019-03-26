@@ -33,7 +33,7 @@ workflows:
     - _common
 
   test-gradle-kts:
-    description: "Test Gradle Kotlin DSl support"
+    description: "Test Gradle Kotlin DSL support"
     envs:
     - SAMPLE_APP_URL: https://github.com/bitrise-samples/android-gradle-kotlin-dsl.git
     - GRADLE_BUILD_FILE_PATH: "./build.gradle.kts"
