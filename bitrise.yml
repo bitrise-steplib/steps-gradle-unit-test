@@ -20,6 +20,7 @@ workflows:
     - SAMPLE_APP_URL: https://github.com/bitrise-samples/sample-apps-android-sdk22.git
     - GRADLE_BUILD_FILE_PATH: ./build.gradle
     - GRADLEW_PATH: ./gradlew
+    - BRANCH: master
     after_run:
     - _common
 
@@ -29,6 +30,7 @@ workflows:
     - SAMPLE_APP_URL: https://github.com/bitrise-samples/android-empty-library.git
     - GRADLE_BUILD_FILE_PATH: ""
     - GRADLEW_PATH: ./gradlew
+    - BRANCH: master
     after_run:
     - _common
 
@@ -38,6 +40,7 @@ workflows:
     - SAMPLE_APP_URL: https://github.com/bitrise-samples/android-gradle-kotlin-dsl.git
     - GRADLE_BUILD_FILE_PATH: "./build.gradle.kts"
     - GRADLEW_PATH: ./gradlew
+    - BRANCH: master
     after_run:
     - _common
 
