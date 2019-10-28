@@ -28,3 +28,7 @@
 [prune]
   go-tests = true
   unused-packages = true
+
+[[constraint]]
+  name = "github.com/bitrise-steplib/bitrise-step-android-unit-test"
+  version = "1.0.0"
