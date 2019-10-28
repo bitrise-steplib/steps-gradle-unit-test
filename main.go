@@ -16,8 +16,6 @@ import (
 	shellquote "github.com/kballard/go-shellquote"
 )
 
-const defaultProjectRoot = "."
-
 // ConfigsModel ...
 type ConfigsModel struct {
 	GradleFile    string
@@ -187,6 +185,7 @@ func main() {
 
 	// Collecting caches
 	log.Infof("Collecting cache:")
+	const defaultProjectRoot = "."
 	if warning := cache.Collect(defaultProjectRoot, cache.Level(configs.CacheLevel)); warning != nil {
 		log.Warnf("%s", warning)
 	}
