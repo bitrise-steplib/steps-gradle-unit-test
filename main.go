@@ -8,10 +8,10 @@ import (
 	"os"
 	"strings"
 
+	"github.com/bitrise-io/go-android/cache"
 	"github.com/bitrise-io/go-utils/command"
 	"github.com/bitrise-io/go-utils/log"
 	"github.com/bitrise-io/go-utils/pathutil"
-	"github.com/bitrise-steplib/bitrise-step-android-unit-test/cache"
 	"github.com/bitrise-tools/go-steputils/input"
 	shellquote "github.com/kballard/go-shellquote"
 )
