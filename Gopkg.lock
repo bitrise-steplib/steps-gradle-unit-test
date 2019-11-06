@@ -3,6 +3,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:62d7c9d697947fc6fdba5989d9fddd70c3dd3c415bb0e4e2cbd42a3acdc3ca9f"
+  name = "github.com/bitrise-io/go-android"
+  packages = ["cache"]
+  pruneopts = "UT"
+  revision = "a28433b493561a6575fcec699f93f124d22150d1"
+
+[[projects]]
+  branch = "master"
   digest = "1:594d51ad1ed8d44086145528a32b5e403c43195c0b236a2f6e116e00baa2c0eb"
   name = "github.com/bitrise-io/go-steputils"
   packages = [
@@ -14,7 +22,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:f3885653a05b45dce14be9a8d51b5b64410f424776b430f02251b92888893aa3"
+  digest = "1:f80f875d6fb07a598b92e734ab804f2995faaa5d6e13cb724255fc1376cb5fbf"
   name = "github.com/bitrise-io/go-utils"
   packages = [
     "colorstring",
@@ -25,39 +33,32 @@
     "pathutil",
   ]
   pruneopts = "UT"
-  revision = "59c81e32d07d18d7301cb7b4a7369b2f30d4d5d1"
+  revision = "2c67c48e7086cfd8f9a29bfac2cd420d4dd1d2f9"
 
 [[projects]]
-  digest = "1:b9f0bdb1388e9bbc02528cc8da58f3c4baef85ffa7e4c5f68f5c418117dea266"
-  name = "github.com/bitrise-steplib/bitrise-step-android-unit-test"
-  packages = ["cache"]
-  pruneopts = "UT"
-  revision = "9d5c1d4e8630a28a5d0d4a23fd29f15b02d45d75"
-  version = "1.0.0"
-
-[[projects]]
-  digest = "1:ced1253b20f1f681ba42e6044c64356db714729a773b0bf55d599b4153443fe5"
+  branch = "master"
+  digest = "1:c59720e65fe5642d76a877559d2664d96fa207ae83e80fa3e186f6e0d95b362e"
   name = "github.com/bitrise-tools/go-steputils"
   packages = ["input"]
   pruneopts = "UT"
-  revision = "a848c9870ff7d745a8fb2a951e1c81fcb147b4ec"
+  revision = "f540824d77dfd382ce84fd0ee0a9da2fba1cce0a"
 
 [[projects]]
-  digest = "1:968adb8d04fddfdd3c65bcf2e7942e7ca491dcb7c3f914671249d97e3ad0893a"
+  branch = "master"
+  digest = "1:400e113a367b511b9b09ca642ee11d9885485a93838526d697033af334a2fdde"
   name = "github.com/kballard/go-shellquote"
   packages = ["."]
   pruneopts = "UT"
-  revision = "cd60e84ee657ff3dc51de0b4f55dd299a3e136f2"
+  revision = "95032a82bc518f77982ea72343cc1ade730072f0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/bitrise-io/go-android/cache",
     "github.com/bitrise-io/go-utils/command",
-    "github.com/bitrise-io/go-utils/fileutil",
     "github.com/bitrise-io/go-utils/log",
     "github.com/bitrise-io/go-utils/pathutil",
-    "github.com/bitrise-steplib/bitrise-step-android-unit-test/cache",
     "github.com/bitrise-tools/go-steputils/input",
     "github.com/kballard/go-shellquote",
   ]
