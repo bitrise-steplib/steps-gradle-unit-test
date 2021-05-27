@@ -84,27 +84,6 @@ workflows:
             echo "BITRISE_GRADLE_TEST_RESULT: $BITRISE_GRADLE_TEST_RESULT"
 
   # ----------------------------------------------------------------
-  # --- Utility workflows
-  godeps-update:
-    title: Godeps update
-    description: |
-      Used for updating bitrise dependencies with godep
-    steps:
-    - script:
-        title: Dependency update
-        inputs:
-        - content: |
-            #!/bin/bash
-            set -ex
-            go get -u -v github.com/tools/godep
-
-            rm -rf ./Godeps
-            rm -rf ./vendor
-
-            go get -t -d ./...
-            godep save ./...
-
-  # ----------------------------------------------------------------
   # --- workflow to create Release version
   create-release:
     steps:
@@ -114,7 +93,7 @@ workflows:
         - content: |
             #!/bin/bash
             set -ex
-            go get -u github.com/bitrise-tools/releaseman
+            go get -u github.com/bitrise-io/releaseman
             export CI=true
             releaseman create --version "$RELEASE_VERSION"
 
