@@ -9,10 +9,11 @@ import (
 	"strings"
 
 	"github.com/bitrise-io/go-android/cache"
+	utilscache "github.com/bitrise-io/go-steputils/cache"
 	"github.com/bitrise-io/go-utils/command"
 	"github.com/bitrise-io/go-utils/log"
 	"github.com/bitrise-io/go-utils/pathutil"
-	"github.com/bitrise-tools/go-steputils/input"
+	"github.com/bitrise-io/go-steputils/input"
 	shellquote "github.com/kballard/go-shellquote"
 )
 
@@ -186,7 +187,7 @@ func main() {
 	// Collecting caches
 	log.Infof("Collecting cache:")
 	const defaultProjectRoot = "."
-	if warning := cache.Collect(defaultProjectRoot, cache.Level(configs.CacheLevel)); warning != nil {
+	if warning := cache.Collect(defaultProjectRoot, utilscache.Level(configs.CacheLevel)); warning != nil {
 		log.Warnf("%s", warning)
 	}
 
