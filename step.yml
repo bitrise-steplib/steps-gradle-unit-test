@@ -11,7 +11,7 @@ description: |-
   * [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html).
   * A Gradle task that is correctly configured in your Gradle project.
 
-  To configure the Step, do the following:
+  To configure the Step:
   1. Add the task you want to run in the **Test task** input.
   1. Set the `gradlew` file path in the **Path to gradlew file**. The path should be relative to the project's root. 
   1. (Optional) You can set the file path to a `build.gradle` file for the Step in the **Optional path to the gradle build file to use input**.
