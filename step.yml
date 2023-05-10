@@ -16,14 +16,15 @@ description: |-
   1. Set the `gradlew` file path in the **Path to gradlew file**. The path should be relative to the project's root. 
   1. (Optional) You can set the file path to a `build.gradle` file for the Step in the **Optional path to the gradle build file to use input**.
   
-  To configure which files will be cached by the Step: 
+  To configure which files will be cached by the `cache-push` Step: 
   1. Open the **Debug** input group.
   1. Choose a cache level in the **Set the level of cache** input. 
   The available options are:
     * `all`: This will cache the build-cache and all dependencies. 
     * `only deps`: This will cache dependencies only.
     * `none`: Nothing will be cached. 
-
+  1. Make sure to include the `cache-push` Step after this step in your workflow.
+  
   ### Troubleshooting
   
   If you receive an error that Gradle Wrapper (gradlew) is required, make sure to generate one if you don't have one already. You can read 
