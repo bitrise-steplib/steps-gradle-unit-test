@@ -23,7 +23,7 @@ description: |-
     * `all`: This will cache the build-cache and all dependencies. 
     * `only deps`: This will cache dependencies only.
     * `none`: Nothing will be cached. 
-  1. Make sure to include the `cache-push` Step after this step in your workflow.
+  1. Make sure to include the `cache-push` Step after this Step in your Workflow.
   
   ### Troubleshooting
   
