@@ -2,8 +2,48 @@ title: Gradle Unit Test
 summary: |-
   Runs Unit Tests with `gradlew`.
 description: |-
-  Runs Unit Tests with `gradlew`.
+  This Step runs unit tests with `gradlew` and exports the results of the tests in the Bitrise test results directory (`$BITRISE_GRADLE_TEST_RESULT`)
   You can specify the test tasks to run and set task flags to run specific files.
+
+  ### Configuring the Step
+
+  To use this Step, you need at least two things:
+  * [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html).
+  * A Gradle task that is correctly configured in your Gradle project.
+
+  To configure the Step:
+  1. Add the task you want to run in the **Test task** input.
+  1. Set the `gradlew` file path in the **Path to gradlew file**. The path should be relative to the project's root. 
+  1. (Optional) You can set the file path to a `build.gradle` file for the Step in the **Optional path to the gradle build file to use input**.
+  
+  To configure which files will be cached by the `cache-push` Step: 
+  1. Open the **Debug** input group.
+  1. Choose a cache level in the **Set the level of cache** input. 
+  The available options are:
+    * `all`: This will cache the build-cache and all dependencies. 
+    * `only deps`: This will cache dependencies only.
+    * `none`: Nothing will be cached. 
+  1. Make sure to include the `cache-push` Step after this Step in your Workflow.
+  
+  ### Troubleshooting
+  
+  If you receive an error that Gradle Wrapper (gradlew) is required, make sure to generate one if you don't have one already. You can read 
+  more about it in the [official Gradle guide](https://docs.gradle.org/current/userguide/gradle_wrapper.html).
+
+  ### Useful links
+
+  * [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html)
+  * [Caching Gradle](https://devcenter.bitrise.io/builds/caching/caching-gradle/)
+  * [Running a unit test](https://devcenter.bitrise.io/en/testing/android-unit-tests.html#running-a-unit-test)
+
+  ### Related Steps
+
+  * [Generate Gradle Wrapper](https://www.bitrise.io/integrations/steps/generate-gradle-wrapper)
+  * [Gradle Runner](https://www.bitrise.io/integrations/steps/gradle-runner)
+  * [Android Build](https://www.bitrise.io/integrations/steps/android-build)
+
+
+  
 website: https://github.com/bitrise-io/steps-gradle-unit-test
 source_code_url: https://github.com/bitrise-io/steps-gradle-unit-test
 support_url: https://github.com/bitrise-io/steps-gradle-unit-test/issues
@@ -29,7 +69,7 @@ inputs:
     opts:
       title: "Test task"
       description: |
-        The test task to execute by gradlew
+        The test task to execute using gradlew
       is_required: true
   - gradlew_file_path: "$GRADLEW_PATH"
     opts:
@@ -47,8 +87,8 @@ inputs:
       category: Debug
       title: Set the level of cache
       description: |-
-        `all` - will cache build-cache and dependencies
-        `only deps` - will cache dependencies only
+        `all` - will cache build-cache and dependencies, 
+        `only deps` - will cache dependencies only, 
         `none` - won't cache any of the above
       is_required: true
       value_options:
