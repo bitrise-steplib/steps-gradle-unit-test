@@ -45,16 +45,19 @@ description: |-
 website: https://github.com/bitrise-io/steps-gradle-unit-test
 source_code_url: https://github.com/bitrise-io/steps-gradle-unit-test
 support_url: https://github.com/bitrise-io/steps-gradle-unit-test/issues
+
 project_type_tags:
 - android
 type_tags:
 - test
-is_requires_admin_user: false
+
 is_always_run: false
 is_skippable: false
+
 toolkit:
   go:
     package_name: github.com/bitrise-io/steps-gradle-unit-test
+
 inputs:
 - gradle_file: $GRADLE_BUILD_FILE_PATH
   opts:
@@ -91,6 +94,7 @@ inputs:
     - all
     - only deps
     - none
+
 outputs:
 - BITRISE_GRADLE_TEST_RESULT:
   opts:
