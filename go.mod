@@ -1,6 +1,6 @@
 module github.com/bitrise-steplib/steps-gradle-unit-test
 
-go 1.23.0
+go 1.21
 
 require (
 	github.com/bitrise-io/go-android/v2 v2.0.0-alpha.10
