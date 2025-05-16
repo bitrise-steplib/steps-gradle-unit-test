@@ -1,10 +1,16 @@
 module github.com/bitrise-steplib/steps-gradle-unit-test
 
-go 1.16
+go 1.21
 
 require (
-	github.com/bitrise-io/go-android v0.0.0-20210527143215-3ad22ad02e2e
-	github.com/bitrise-io/go-steputils v0.0.0-20210527075147-910ce7a105a1
-	github.com/bitrise-io/go-utils v0.0.0-20210520073355-367fa34178f5
+	github.com/bitrise-io/go-android/v2 v2.0.0-alpha.10
+	github.com/bitrise-io/go-steputils v1.0.6
+	github.com/bitrise-io/go-steputils/v2 v2.0.0-alpha.37
+	github.com/bitrise-io/go-utils/v2 v2.0.0-alpha.23
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
+)
+
+require (
+	github.com/bitrise-io/go-utils v1.0.15 // indirect
+	github.com/hashicorp/go-version v1.7.0 // indirect
 )
