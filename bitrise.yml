@@ -1,7 +1,6 @@
 format_version: "20"
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 
-
 workflows:
   ci:
     before_run:
@@ -16,7 +15,7 @@ workflows:
     - git::https://github.com/bitrise-steplib/steps-check.git: { }
 
   test:
-    description: "Test with all inputs defined"
+    description: Test with all inputs defined
     envs:
     - SAMPLE_APP_URL: https://github.com/bitrise-samples/sample-apps-android-sdk22.git
     - GRADLE_BUILD_FILE_PATH: ./build.gradle
@@ -26,7 +25,7 @@ workflows:
     - _common
 
   test-no-root-buildfile:
-    description: "Test without GRADLE_BUILD_FILE_PATH"
+    description: Test without GRADLE_BUILD_FILE_PATH
     envs:
     - SAMPLE_APP_URL: https://github.com/bitrise-samples/android-empty-library.git
     - GRADLE_BUILD_FILE_PATH: ""
@@ -36,10 +35,10 @@ workflows:
     - _common
 
   test-gradle-kts:
-    description: "Test Gradle Kotlin DSL support"
+    description: Test Gradle Kotlin DSL support
     envs:
     - SAMPLE_APP_URL: https://github.com/bitrise-samples/android-gradle-kotlin-dsl.git
-    - GRADLE_BUILD_FILE_PATH: "./build.gradle.kts"
+    - GRADLE_BUILD_FILE_PATH: ./build.gradle.kts
     - GRADLEW_PATH: ./gradlew
     - BRANCH: master
     after_run:
