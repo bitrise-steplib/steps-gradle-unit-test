@@ -60,10 +60,11 @@ workflows:
         inputs:
         - path: ./_tmp/subdir
         - is_create_path: true
-    - bundle::clone_repo:
+    - git::https://github.com/bitrise-steplib/bitrise-step-simple-git-clone.git@master:
         inputs:
-        - repo_url: https://github.com/bitrise-samples/android-gradle-kotlin-dsl.git
+        - repository_url: https://github.com/bitrise-samples/android-gradle-kotlin-dsl.git
         - branch: master
+        - clone_into_dir: ./
     - change-workdir:
         title: Switch working dir to test ./_tmp dir
         run_if: true
@@ -99,10 +100,11 @@ step_bundles:
         inputs:
         - path: ./_tmp
         - is_create_path: true
-    - bundle::clone_repo:
+    - git::https://github.com/bitrise-steplib/bitrise-step-simple-git-clone.git@master:
         inputs:
-        - repo_url: $test_app_repo_url
+        - repository_url: $test_app_repo_url
         - branch: $test_app_branch
+        - clone_into_dir: ./
     - path::./:
         inputs:
         - gradle_build_script_path: $gradle_build_script_path
@@ -112,24 +114,3 @@ step_bundles:
         inputs:
         - content: |-
             echo "BITRISE_GRADLE_TEST_RESULT: $BITRISE_GRADLE_TEST_RESULT"
-
-  clone_repo:
-    inputs:
-    - repo_url:
-    - branch:
-    steps:
-    - script:
-        inputs:
-        - content: |-
-            #!/usr/bin/env bash
-            if [[ -z "${repo_url}" ]]; then
-              echo "error: there is no repo_url specified"
-              exit 1
-            elif [[ -z "${branch}" ]]; then
-              echo "error: can't checkout: there is no branch specified"
-              exit 1
-            fi
-            git init
-            git remote add origin "${repo_url}"
-            git fetch || exit 1
-            git checkout "${branch}"
