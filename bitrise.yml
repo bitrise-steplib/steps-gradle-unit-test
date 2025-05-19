@@ -50,15 +50,11 @@ workflows:
     steps:
     - script:
         inputs:
-        - content: |-
-            #!/bin/bash
-            set -ex
-            rm -rf ./_tmp
+        - content: rm -rf $ORIG_BITRISE_SOURCE_DIR/_tmp
     - change-workdir:
-        title: Switch working dir to test ./_tmp/subdir dir
-        run_if: true
+        is_always_run: true
         inputs:
-        - path: ./_tmp/subdir
+        - path: $ORIG_BITRISE_SOURCE_DIR/_tmp/subdir
         - is_create_path: true
     - git::https://github.com/bitrise-steplib/bitrise-step-simple-git-clone.git@master:
         inputs:
@@ -66,8 +62,7 @@ workflows:
         - branch: master
         - clone_into_dir: ./
     - change-workdir:
-        title: Switch working dir to test ./_tmp dir
-        run_if: true
+        is_always_run: true
         inputs:
         - path: $ORIG_BITRISE_SOURCE_DIR/_tmp
         - is_create_path: true
@@ -75,7 +70,6 @@ workflows:
         inputs:
         - project_root_dir: ./subdir
     - script:
-        title: Output test
         is_always_run: true
         inputs:
         - content: |-
@@ -90,15 +84,11 @@ step_bundles:
     steps:
     - script:
         inputs:
-        - content: |-
-            #!/bin/bash
-            set -ex
-            rm -rf ./_tmp
+        - content: rm -rf $ORIG_BITRISE_SOURCE_DIR/_tmp
     - change-workdir:
-        title: Switch working dir to test / _tmp dir
-        run_if: true
+        is_always_run: true
         inputs:
-        - path: ./_tmp
+        - path: $ORIG_BITRISE_SOURCE_DIR/_tmp
         - is_create_path: true
     - git::https://github.com/bitrise-steplib/bitrise-step-simple-git-clone.git@master:
         inputs:
@@ -109,7 +99,6 @@ step_bundles:
         inputs:
         - gradle_build_script_path: $gradle_build_script_path
     - script:
-        title: Output test
         is_always_run: true
         inputs:
         - content: |-
