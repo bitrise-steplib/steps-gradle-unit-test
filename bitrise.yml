@@ -62,8 +62,8 @@ workflows:
         - is_create_path: true
     - bundle::clone_repo:
         inputs:
-        - test_app_repo_url: https://github.com/bitrise-samples/android-gradle-kotlin-dsl.git
-        - test_app_branch: master
+        - repo_url: https://github.com/bitrise-samples/android-gradle-kotlin-dsl.git
+        - branch: master
     - change-workdir:
         title: Switch working dir to test ./_tmp dir
         run_if: true
@@ -101,8 +101,8 @@ step_bundles:
         - is_create_path: true
     - bundle::clone_repo:
         inputs:
-        - test_app_repo_url: $test_app_repo_url
-        - test_app_branch: $test_app_branch
+        - repo_url: $test_app_repo_url
+        - branch: $test_app_branch
     - path::./:
         inputs:
         - gradle_build_script_path: $gradle_build_script_path
@@ -115,21 +115,21 @@ step_bundles:
 
   clone_repo:
     inputs:
-    - test_app_repo_url:
-    - test_app_branch:
+    - repo_url:
+    - branch:
     steps:
     - script:
         inputs:
         - content: |-
             #!/usr/bin/env bash
-            if [[ -z "${test_app_repo_url}" ]]; then
-              echo "error: there is no test_app_repo_url specified"
+            if [[ -z "${repo_url}" ]]; then
+              echo "error: there is no repo_url specified"
               exit 1
-            elif [[ -z "${test_app_branch}" ]]; then
-              echo "error: can't checkout: there is no test_app_branch specified"
+            elif [[ -z "${branch}" ]]; then
+              echo "error: can't checkout: there is no branch specified"
               exit 1
             fi
             git init
-            git remote add origin "${test_app_repo_url}"
+            git remote add origin "${repo_url}"
             git fetch || exit 1
-            git checkout "${test_app_branch}"
+            git checkout "${branch}"

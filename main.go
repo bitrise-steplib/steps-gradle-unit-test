@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"path/filepath"
+	"strings"
 
 	"github.com/bitrise-io/go-android/v2/cache"
 	utilscache "github.com/bitrise-io/go-steputils/cache"
@@ -39,11 +39,12 @@ func main() {
 	envRepo := env.NewRepository()
 	inputParser := stepconf.NewInputParser(envRepo)
 	pathChecker := pathutil.NewPathChecker()
+	pathModifier := pathutil.NewPathModifier()
 	cmdFactory := command.NewFactory(envRepo)
 	outputExporter := export.NewExporter(cmdFactory)
 
 	// Parse inputs
-	config, err := processConfig(inputParser, pathChecker, logger)
+	config, err := processConfig(inputParser, pathChecker, pathModifier, logger)
 	if err != nil {
 		failF(logger, "Failed to process config: %s", err)
 	}
@@ -55,7 +56,7 @@ func main() {
 
 	fmt.Println()
 	logger.Infof("Running gradle task...")
-	if err := runGradleTask(cmdFactory, logger, config.ProjectRootDir, config.GradlewPath, config.TestTasks, config.GradleBuildScriptPath, config.GradlewCommandFlags); err != nil {
+	if err := runGradleTask(cmdFactory, logger, config.ProjectRootDir, config.TestTasks, config.GradleBuildScriptPath, config.GradlewCommandFlags); err != nil {
 		logger.Errorf("Gradle task failed: %s", err)
 
 		if err := outputExporter.ExportOutput("BITRISE_GRADLE_TEST_RESULT", "failed"); err != nil {
@@ -78,7 +79,7 @@ func main() {
 	}
 }
 
-func processConfig(inputParser stepconf.InputParser, pathChecker pathutil.PathChecker, logger log.Logger) (*Configs, error) {
+func processConfig(inputParser stepconf.InputParser, pathChecker pathutil.PathChecker, pathModifier pathutil.PathModifier, logger log.Logger) (*Configs, error) {
 	var inputs Inputs
 	if err := inputParser.Parse(&inputs); err != nil {
 		return nil, fmt.Errorf("issue with input: %s", err)
@@ -95,7 +96,7 @@ func processConfig(inputParser stepconf.InputParser, pathChecker pathutil.PathCh
 		}
 	}
 
-	gradlewPath := filepath.Join(inputs.ProjectRootDir, "gradlew")
+	gradlewPath := strings.TrimSuffix(inputs.ProjectRootDir, string(os.PathSeparator)) + string(os.PathSeparator) + "gradlew"
 	if exist, err := pathChecker.IsPathExists(gradlewPath); err != nil {
 		return nil, fmt.Errorf("failed to check if gradlew exist at %s: %w", gradlewPath, err)
 	} else if !exist {
@@ -112,7 +113,7 @@ func processConfig(inputParser stepconf.InputParser, pathChecker pathutil.PathCh
 	}, nil
 }
 
-func runGradleTask(cmdFactory command.Factory, logger log.Logger, workDir, gradlewPth, tasks, buildScriptPth, flags string) error {
+func runGradleTask(cmdFactory command.Factory, logger log.Logger, workDir, tasks, buildScriptPth, flags string) error {
 	flagSlice, err := shellquote.Split(flags)
 	if err != nil {
 		return err
@@ -130,7 +131,7 @@ func runGradleTask(cmdFactory command.Factory, logger log.Logger, workDir, gradl
 	args = append(args, taskSlice...)
 	args = append(args, flagSlice...)
 
-	cmd := cmdFactory.Create(gradlewPth, args, &command.Opts{
+	cmd := cmdFactory.Create("./gradlew", args, &command.Opts{
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
 		Dir:    workDir,
