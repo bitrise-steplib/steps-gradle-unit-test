@@ -7,8 +7,8 @@ app:
 
 workflows:
   ci:
-#    before_run:
-#    - check
+    before_run:
+    - check
     after_run:
     - test
     - test-no-root-build-script-file

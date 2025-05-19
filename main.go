@@ -99,7 +99,6 @@ func processConfig(inputParser stepconf.InputParser, pathChecker pathutil.PathCh
 	}
 
 	gradlewPath := filepath.Join(inputs.ProjectRootDir, "gradlew")
-	//gradlewPath := strings.TrimSuffix(inputs.ProjectRootDir, string(os.PathSeparator)) + string(os.PathSeparator) + "gradlew"
 	if exist, err := pathChecker.IsPathExists(gradlewPath); err != nil {
 		return nil, fmt.Errorf("failed to check if gradlew exist at %s: %w", gradlewPath, err)
 	} else if !exist {
