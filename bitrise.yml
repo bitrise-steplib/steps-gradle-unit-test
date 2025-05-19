@@ -70,6 +70,7 @@ workflows:
         inputs:
         - project_root_dir: ./subdir
         - gradle_build_script_path: ./build.gradle.kts
+        - test_task: testDebugUnitTest
     - script:
         is_always_run: true
         inputs:
