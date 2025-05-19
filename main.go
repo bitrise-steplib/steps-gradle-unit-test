@@ -55,7 +55,7 @@ func main() {
 
 	fmt.Println()
 	logger.Infof("Running gradle task...")
-	if err := runGradleTask(cmdFactory, logger, config.GradlewPath, config.GradleBuildScriptPath, config.TestTasks, config.GradlewCommandFlags); err != nil {
+	if err := runGradleTask(cmdFactory, logger, config.ProjectRootDir, config.GradlewPath, config.TestTasks, config.GradleBuildScriptPath, config.GradlewCommandFlags); err != nil {
 		logger.Errorf("Gradle task failed: %s", err)
 
 		if err := outputExporter.ExportOutput("BITRISE_GRADLE_TEST_RESULT", "failed"); err != nil {
@@ -112,8 +112,8 @@ func processConfig(inputParser stepconf.InputParser, pathChecker pathutil.PathCh
 	}, nil
 }
 
-func runGradleTask(cmdFactory command.Factory, logger log.Logger, gradleTool, buildFile, tasks, options string) error {
-	optionSlice, err := shellquote.Split(options)
+func runGradleTask(cmdFactory command.Factory, logger log.Logger, workDir, gradlewPth, tasks, buildScriptPth, flags string) error {
+	flagSlice, err := shellquote.Split(flags)
 	if err != nil {
 		return err
 	}
@@ -124,15 +124,16 @@ func runGradleTask(cmdFactory command.Factory, logger log.Logger, gradleTool, bu
 	}
 
 	var args []string
-	if buildFile != "" {
-		args = append(args, "--build-file", buildFile)
+	if buildScriptPth != "" {
+		args = append(args, "--build-file", buildScriptPth)
 	}
 	args = append(args, taskSlice...)
-	args = append(args, optionSlice...)
+	args = append(args, flagSlice...)
 
-	cmd := cmdFactory.Create(gradleTool, args, &command.Opts{
+	cmd := cmdFactory.Create(gradlewPth, args, &command.Opts{
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
+		Dir:    workDir,
 	})
 
 	logger.Donef("$ %s", cmd.PrintableCommandArgs())
