@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
+	"path/filepath"
 
 	"github.com/bitrise-io/go-android/v2/cache"
 	utilscache "github.com/bitrise-io/go-steputils/cache"
@@ -25,12 +25,12 @@ type Inputs struct {
 }
 
 type Configs struct {
-	ProjectRootDir        string
-	GradlewPath           string
-	TestTasks             string
-	GradlewCommandFlags   string
-	GradleBuildScriptPath string
-	CacheLevel            string
+	ProjectRootDir                string
+	GradlewPath                   string
+	TestTasks                     []string
+	GradlewCommandFlags           []string
+	GradleBuildScriptRelativePath string
+	CacheLevel                    string
 }
 
 func main() {
@@ -56,7 +56,7 @@ func main() {
 
 	fmt.Println()
 	logger.Infof("Running gradle task...")
-	if err := runGradleTask(cmdFactory, logger, config.ProjectRootDir, config.TestTasks, config.GradleBuildScriptPath, config.GradlewCommandFlags); err != nil {
+	if err := runGradleTask(cmdFactory, logger, config.ProjectRootDir, config.TestTasks, config.GradleBuildScriptRelativePath, config.GradlewCommandFlags); err != nil {
 		logger.Errorf("Gradle task failed: %s", err)
 
 		if err := outputExporter.ExportOutput("BITRISE_GRADLE_TEST_RESULT", "failed"); err != nil {
@@ -88,48 +88,51 @@ func processConfig(inputParser stepconf.InputParser, pathChecker pathutil.PathCh
 	stepconf.Print(inputs)
 	logger.Println()
 
+	var gradleBuildScriptPath string
 	if inputs.GradleBuildScriptPath != "" {
-		if exist, err := pathChecker.IsPathExists(inputs.GradleBuildScriptPath); err != nil {
-			return nil, fmt.Errorf("failed to check if gradle build file exist at %s: %w", inputs.GradleBuildScriptPath, err)
+		gradleBuildScriptPath = filepath.Join(inputs.ProjectRootDir, inputs.GradleBuildScriptPath)
+		if exist, err := pathChecker.IsPathExists(gradleBuildScriptPath); err != nil {
+			return nil, fmt.Errorf("failed to check if gradle build file exist at %s: %w", gradleBuildScriptPath, err)
 		} else if !exist {
-			return nil, fmt.Errorf("gradle build file not exist at: %s", inputs.GradleBuildScriptPath)
+			return nil, fmt.Errorf("gradle build file not exist at: %s", gradleBuildScriptPath)
 		}
 	}
 
-	gradlewPath := strings.TrimSuffix(inputs.ProjectRootDir, string(os.PathSeparator)) + string(os.PathSeparator) + "gradlew"
+	gradlewPath := filepath.Join(inputs.ProjectRootDir, "gradlew")
+	//gradlewPath := strings.TrimSuffix(inputs.ProjectRootDir, string(os.PathSeparator)) + string(os.PathSeparator) + "gradlew"
 	if exist, err := pathChecker.IsPathExists(gradlewPath); err != nil {
 		return nil, fmt.Errorf("failed to check if gradlew exist at %s: %w", gradlewPath, err)
 	} else if !exist {
 		return nil, fmt.Errorf("gradlew file not exist at: %s", gradlewPath)
 	}
 
+	taskSlice, err := shellquote.Split(inputs.TestTasks)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse tasks: %w", err)
+	}
+
+	flagSlice, err := shellquote.Split(inputs.GradlewCommandFlags)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse gradlew flags: %w", err)
+	}
+
 	return &Configs{
-		ProjectRootDir:        inputs.ProjectRootDir,
-		GradlewPath:           gradlewPath,
-		TestTasks:             inputs.TestTasks,
-		GradlewCommandFlags:   inputs.GradlewCommandFlags,
-		GradleBuildScriptPath: inputs.GradleBuildScriptPath,
-		CacheLevel:            inputs.CacheLevel,
+		ProjectRootDir:                inputs.ProjectRootDir,
+		GradlewPath:                   gradlewPath,
+		TestTasks:                     taskSlice,
+		GradlewCommandFlags:           flagSlice,
+		GradleBuildScriptRelativePath: inputs.GradleBuildScriptPath,
+		CacheLevel:                    inputs.CacheLevel,
 	}, nil
 }
 
-func runGradleTask(cmdFactory command.Factory, logger log.Logger, workDir, tasks, buildScriptPth, flags string) error {
-	flagSlice, err := shellquote.Split(flags)
-	if err != nil {
-		return err
-	}
-
-	taskSlice, err := shellquote.Split(tasks)
-	if err != nil {
-		return err
-	}
-
+func runGradleTask(cmdFactory command.Factory, logger log.Logger, workDir string, tasks []string, buildScriptPth string, flags []string) error {
 	var args []string
 	if buildScriptPth != "" {
 		args = append(args, "--build-file", buildScriptPth)
 	}
-	args = append(args, taskSlice...)
-	args = append(args, flagSlice...)
+	args = append(args, tasks...)
+	args = append(args, flags...)
 
 	cmd := cmdFactory.Create("./gradlew", args, &command.Opts{
 		Stdout: os.Stdout,

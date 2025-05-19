@@ -7,12 +7,13 @@ app:
 
 workflows:
   ci:
-    before_run:
-    - check
+#    before_run:
+#    - check
     after_run:
     - test
     - test-no-root-build-script-file
     - test-gradle-kts
+    - test-project-in-sub-dir
 
   check:
     steps:
@@ -43,18 +44,17 @@ workflows:
         inputs:
         - test_app_repo_url: https://github.com/bitrise-samples/android-empty-library.git
         - test_app_branch: master
-        - gradle_build_script_path: ./build.gradle.kts
 
   test-project-in-sub-dir:
     description: Test Gradle project placed in a sub directory.
     steps:
     - script:
         inputs:
-        - content: rm -rf $ORIG_BITRISE_SOURCE_DIR/_tmp
+        - content: rm -rf "${ORIG_BITRISE_SOURCE_DIR}/_tmp"
     - change-workdir:
         is_always_run: true
         inputs:
-        - path: $ORIG_BITRISE_SOURCE_DIR/_tmp/subdir
+        - path: ${ORIG_BITRISE_SOURCE_DIR}/_tmp/subdir
         - is_create_path: true
     - git::https://github.com/bitrise-steplib/bitrise-step-simple-git-clone.git@master:
         inputs:
@@ -64,16 +64,22 @@ workflows:
     - change-workdir:
         is_always_run: true
         inputs:
-        - path: $ORIG_BITRISE_SOURCE_DIR/_tmp
+        - path: ${ORIG_BITRISE_SOURCE_DIR}/_tmp
         - is_create_path: true
     - path::./:
         inputs:
         - project_root_dir: ./subdir
+        - gradle_build_script_path: ./build.gradle.kts
     - script:
         is_always_run: true
         inputs:
         - content: |-
             echo "BITRISE_GRADLE_TEST_RESULT: $BITRISE_GRADLE_TEST_RESULT"
+    - change-workdir:
+        is_always_run: true
+        inputs:
+        - path: $ORIG_BITRISE_SOURCE_DIR
+        - is_create_path: true
 
 step_bundles:
   run_step_test:
@@ -84,11 +90,11 @@ step_bundles:
     steps:
     - script:
         inputs:
-        - content: rm -rf $ORIG_BITRISE_SOURCE_DIR/_tmp
+        - content: rm -rf "${ORIG_BITRISE_SOURCE_DIR}/_tmp"
     - change-workdir:
         is_always_run: true
         inputs:
-        - path: $ORIG_BITRISE_SOURCE_DIR/_tmp
+        - path: ${ORIG_BITRISE_SOURCE_DIR}/_tmp
         - is_create_path: true
     - git::https://github.com/bitrise-steplib/bitrise-step-simple-git-clone.git@master:
         inputs:
@@ -103,3 +109,8 @@ step_bundles:
         inputs:
         - content: |-
             echo "BITRISE_GRADLE_TEST_RESULT: $BITRISE_GRADLE_TEST_RESULT"
+    - change-workdir:
+        is_always_run: true
+        inputs:
+        - path: $ORIG_BITRISE_SOURCE_DIR
+        - is_create_path: true

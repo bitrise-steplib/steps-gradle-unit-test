@@ -85,7 +85,9 @@ inputs:
   opts:
     title: Path to the Gradle build script to use.
     summary: Path to the Gradle build script to use.
-    description: Path to the Gradle build script to use.
+    description: |-
+      Path to the Gradle build script to use.
+      The path should be relative to the **Project root directory**.
 - cache_level: only deps
   opts:
     category: Debug
