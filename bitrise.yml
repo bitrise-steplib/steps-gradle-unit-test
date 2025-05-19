@@ -11,7 +11,7 @@ workflows:
     - check
     after_run:
     - test
-    - test-no-root-buildfile
+    - test-no-root-build-script-file
     - test-gradle-kts
 
   check:
@@ -36,7 +36,7 @@ workflows:
         - test_app_branch: master
         - gradle_build_script_path: ./build.gradle.kts
 
-  test-no-root-buildfile:
+  test-no-root-build-script-file:
     description: Test without explicit Gradle build script path.
     steps:
     - bundle::run_step_test:
