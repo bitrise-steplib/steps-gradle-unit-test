@@ -19,7 +19,7 @@ workflows:
     - git::https://github.com/bitrise-steplib/steps-check.git: { }
 
   test:
-    description:  Test Gradle Groovy DSL support.
+    description: Test Gradle Groovy DSL support.
     steps:
     - bundle::run_step_test:
         inputs:
