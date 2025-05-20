@@ -1,9 +1,9 @@
-title: Gradle Unit Test
+title: Run Gradle Tests
 summary: |-
-  Runs Unit Tests with `gradlew`.
+  Runs tests with `gradlew`.
 description: |-
-  This Step runs unit tests with `gradlew` and exports the results of the tests in the Bitrise test results directory (`$BITRISE_GRADLE_TEST_RESULT`)
-  You can specify the test tasks to run and set task flags to run specific files.
+  This Step runs tests with `gradlew`.
+  You can specify the test tasks to run and set flags to the executed `gradlew` command.
 
   ### Configuring the Step
 
@@ -12,18 +12,10 @@ description: |-
   * A Gradle task that is correctly configured in your Gradle project.
 
   To configure the Step:
+  1. Set the Gradle project root directory in the **Project root directory** input.
   1. Add the task you want to run in the **Test task** input.
-  1. Set the `gradlew` file path in the **Path to gradlew file**. The path should be relative to the project's root.
-  1. (Optional) You can set the file path to a `build.gradle` file for the Step in the **Optional path to the gradle build file to use input**.
-
-  To configure which files will be cached by the `cache-push` Step:
-  1. Open the **Debug** input group.
-  1. Choose a cache level in the **Set the level of cache** input.
-  The available options are:
-    * `all`: This will cache the build-cache and all dependencies.
-    * `only deps`: This will cache dependencies only.
-    * `none`: Nothing will be cached.
-  1. Make sure to include the `cache-push` Step after this Step in your Workflow.
+  1. (Optional) Add any flags you want to pass to the executed gradlew command in the **Additional flags** input. For example, you can use `--tests='*.MyTestClass'` to run a specific test class.
+  1. (Optional) You can set the file path to a `build.gradle` file for the Step in the **Path to the Gradle build script to use** input.
 
   ### Troubleshooting
 
@@ -59,46 +51,39 @@ toolkit:
     package_name: github.com/bitrise-io/steps-gradle-unit-test
 
 inputs:
-- gradle_file: $GRADLE_BUILD_FILE_PATH
+- project_root_dir: $BITRISE_SOURCE_DIR
   opts:
-    title: Optional path to the gradle build file to use
-    description: |
-      Optional path to the gradle build file to use
-- unit_test_task: test
+    title: Project root directory
+    summary: The root directory of the Gradle project.
+    description: |-
+      The root directory of the Gradle project.
+      This is the directory which contains all source files from your project, as well as Gradle files, including the `gradlew` file.
+    is_required: true
+- test_task: test
   opts:
     title: Test task
-    description: |
-      The test task to execute using gradlew
+    summary: The test task to be executed.
+    description: The test task to be executed.
     is_required: true
-- gradlew_file_path: $GRADLEW_PATH
+- gradlew_command_flags: --continue
   opts:
-    title: Path to the gradlew file
+    title: Additional flags
+    summary: Flags to pass to the executed gradlew command.
     description: |
-      Path to the gradlew file
-    is_required: true
-- unit_test_flags: --continue
+      Flags to pass to the executed gradlew command.
+      For example, you can use `--tests='*.MyTestClass'` to run a specific test class.
+- gradle_build_script_path:
   opts:
-    title: Test flags
-    description: |
-      Use this flag to execute tests for specified files. For example, `--tests='*.MyTestClass'`
-- cache_level: only deps
-  opts:
-    category: Debug
-    title: Set the level of cache
+    title: Path to the Gradle build script to use.
+    summary: Path to the Gradle build script to use.
     description: |-
-      `all` - will cache build-cache and dependencies,
-      `only deps` - will cache dependencies only,
-      `none` - won't cache any of the above
-    is_required: true
-    value_options:
-    - all
-    - only deps
-    - none
+      Path to the Gradle build script to use.
+      The path should be relative to the **Project root directory**.
 
 outputs:
 - BITRISE_GRADLE_TEST_RESULT:
   opts:
-    title: Result of the tests. 'succeeded' or 'failed'.
+    title: Result of the tests (`succeeded` or `failed`).
     value_options:
     - succeeded
     - failed

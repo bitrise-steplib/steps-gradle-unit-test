@@ -1,84 +1,117 @@
 format_version: "20"
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 
+app:
+  envs:
+  - ORIG_BITRISE_SOURCE_DIR: $BITRISE_SOURCE_DIR
+
 workflows:
   ci:
     before_run:
     - check
     after_run:
     - test
-    - test-no-root-buildfile
+    - test-no-root-build-script-file
     - test-gradle-kts
+    - test-project-in-sub-dir
 
   check:
     steps:
     - git::https://github.com/bitrise-steplib/steps-check.git: { }
 
   test:
-    description: Test with all inputs defined
-    envs:
-    - SAMPLE_APP_URL: https://github.com/bitrise-samples/sample-apps-android-sdk22.git
-    - GRADLE_BUILD_FILE_PATH: ./build.gradle
-    - GRADLEW_PATH: ./gradlew
-    - BRANCH: master
-    after_run:
-    - _common
-
-  test-no-root-buildfile:
-    description: Test without GRADLE_BUILD_FILE_PATH
-    envs:
-    - SAMPLE_APP_URL: https://github.com/bitrise-samples/android-empty-library.git
-    - GRADLE_BUILD_FILE_PATH: ""
-    - GRADLEW_PATH: ./gradlew
-    - BRANCH: master
-    after_run:
-    - _common
+    description: Test Gradle Groovy DSL support.
+    steps:
+    - bundle::run_step_test:
+        inputs:
+        - test_app_repo_url: https://github.com/bitrise-samples/sample-apps-android-sdk22.git
+        - test_app_branch: master
+        - gradle_build_script_path: ./build.gradle
 
   test-gradle-kts:
-    description: Test Gradle Kotlin DSL support
-    envs:
-    - SAMPLE_APP_URL: https://github.com/bitrise-samples/android-gradle-kotlin-dsl.git
-    - GRADLE_BUILD_FILE_PATH: ./build.gradle.kts
-    - GRADLEW_PATH: ./gradlew
-    - BRANCH: master
-    after_run:
-    - _common
+    description: Test Gradle Kotlin DSL support.
+    steps:
+    - bundle::run_step_test:
+        inputs:
+        - test_app_repo_url: https://github.com/bitrise-samples/android-gradle-kotlin-dsl.git
+        - test_app_branch: master
+        - gradle_build_script_path: ./build.gradle.kts
 
-  # ----------------------------------------------------------------
-  # --- workflow to Step Test
-  _common:
+  test-no-root-build-script-file:
+    description: Test without explicit Gradle build script path.
+    steps:
+    - bundle::run_step_test:
+        inputs:
+        - test_app_repo_url: https://github.com/bitrise-samples/android-empty-library.git
+        - test_app_branch: master
+
+  test-project-in-sub-dir:
+    description: Test Gradle project placed in a sub directory.
     steps:
     - script:
         inputs:
-        - content: |-
-            #!/bin/bash
-            set -ex
-            rm -rf ./_tmp
+        - content: rm -rf "${ORIG_BITRISE_SOURCE_DIR}/_tmp"
     - change-workdir:
-        title: Switch working dir to test / _tmp dir
-        run_if: true
+        is_always_run: true
         inputs:
-        - path: ./_tmp
+        - path: ${ORIG_BITRISE_SOURCE_DIR}/_tmp/subdir
         - is_create_path: true
-    - script:
+    - git::https://github.com/bitrise-steplib/bitrise-step-simple-git-clone.git@master:
         inputs:
-        - content: |-
-            #!/usr/bin/env bash
-            if [[ -z "${SAMPLE_APP_URL}" ]]; then
-              echo "error: there is no SAMPLE_APP_URL env var specified"
-              exit 1
-            elif [[ -z "${COMMIT}" && -z "${BRANCH}" ]]; then
-              echo "error: can't checkout: there is no BRANCH or COMMIT env var specified"
-              exit 1
-            fi
-            git init
-            git remote add origin "${SAMPLE_APP_URL}"
-            git fetch || exit 1
-            [[ -n "${COMMIT}" ]] && git checkout "${COMMIT}" || git checkout "${BRANCH}"
+        - repository_url: https://github.com/bitrise-samples/android-gradle-kotlin-dsl.git
+        - branch: master
+        - clone_into_dir: ./
+    - change-workdir:
+        is_always_run: true
+        inputs:
+        - path: ${ORIG_BITRISE_SOURCE_DIR}/_tmp
+        - is_create_path: true
     - path::./:
+        inputs:
+        - project_root_dir: ./subdir
+        - gradle_build_script_path: ./build.gradle.kts
+        - test_task: testDebugUnitTest
     - script:
-        title: Output test
         is_always_run: true
         inputs:
         - content: |-
             echo "BITRISE_GRADLE_TEST_RESULT: $BITRISE_GRADLE_TEST_RESULT"
+    - change-workdir:
+        is_always_run: true
+        inputs:
+        - path: $ORIG_BITRISE_SOURCE_DIR
+        - is_create_path: true
+
+step_bundles:
+  run_step_test:
+    inputs:
+    - test_app_repo_url:
+    - test_app_branch:
+    - gradle_build_script_path:
+    steps:
+    - script:
+        inputs:
+        - content: rm -rf "${ORIG_BITRISE_SOURCE_DIR}/_tmp"
+    - change-workdir:
+        is_always_run: true
+        inputs:
+        - path: ${ORIG_BITRISE_SOURCE_DIR}/_tmp
+        - is_create_path: true
+    - git::https://github.com/bitrise-steplib/bitrise-step-simple-git-clone.git@master:
+        inputs:
+        - repository_url: $test_app_repo_url
+        - branch: $test_app_branch
+        - clone_into_dir: ./
+    - path::./:
+        inputs:
+        - gradle_build_script_path: $gradle_build_script_path
+    - script:
+        is_always_run: true
+        inputs:
+        - content: |-
+            echo "BITRISE_GRADLE_TEST_RESULT: $BITRISE_GRADLE_TEST_RESULT"
+    - change-workdir:
+        is_always_run: true
+        inputs:
+        - path: $ORIG_BITRISE_SOURCE_DIR
+        - is_create_path: true
