@@ -5,8 +5,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/bitrise-io/go-android/v2/cache"
-	utilscache "github.com/bitrise-io/go-steputils/cache"
 	"github.com/bitrise-io/go-steputils/v2/export"
 	"github.com/bitrise-io/go-steputils/v2/stepconf"
 	"github.com/bitrise-io/go-utils/v2/command"
@@ -21,7 +19,6 @@ type Inputs struct {
 	TestTasks             string `env:"test_task,required"`
 	GradlewCommandFlags   string `env:"gradlew_command_flags"`
 	GradleBuildScriptPath string `env:"gradle_build_script_path"`
-	CacheLevel            string `env:"cache_level,opt[all,only deps,none]"`
 }
 
 type Configs struct {
@@ -30,7 +27,6 @@ type Configs struct {
 	TestTasks                     []string
 	GradlewCommandFlags           []string
 	GradleBuildScriptRelativePath string
-	CacheLevel                    string
 }
 
 func main() {
@@ -68,14 +64,6 @@ func main() {
 
 	if err := outputExporter.ExportOutput("BITRISE_GRADLE_TEST_RESULT", "succeeded"); err != nil {
 		logger.Warnf("Failed to export environment: %s: %s", "BITRISE_GRADLE_TEST_RESULT", err)
-	}
-
-	// Collecting caches
-	logger.Infof("Collecting cache:")
-	const defaultProjectRoot = "."
-
-	if err := cache.Collect(defaultProjectRoot, utilscache.Level(config.CacheLevel), cmdFactory); err != nil {
-		logger.Warnf("Failed to collect cache: %s", err)
 	}
 }
 
@@ -121,7 +109,6 @@ func processConfig(inputParser stepconf.InputParser, pathChecker pathutil.PathCh
 		TestTasks:                     taskSlice,
 		GradlewCommandFlags:           flagSlice,
 		GradleBuildScriptRelativePath: inputs.GradleBuildScriptPath,
-		CacheLevel:                    inputs.CacheLevel,
 	}, nil
 }
 
