@@ -35,12 +35,11 @@ func main() {
 	envRepo := env.NewRepository()
 	inputParser := stepconf.NewInputParser(envRepo)
 	pathChecker := pathutil.NewPathChecker()
-	pathModifier := pathutil.NewPathModifier()
 	cmdFactory := command.NewFactory(envRepo)
 	outputExporter := export.NewExporter(cmdFactory)
 
 	// Parse inputs
-	config, err := processConfig(inputParser, pathChecker, pathModifier, logger)
+	config, err := processConfig(inputParser, pathChecker, logger)
 	if err != nil {
 		failF(logger, "Failed to process config: %s", err)
 	}
@@ -67,7 +66,7 @@ func main() {
 	}
 }
 
-func processConfig(inputParser stepconf.InputParser, pathChecker pathutil.PathChecker, pathModifier pathutil.PathModifier, logger log.Logger) (*Configs, error) {
+func processConfig(inputParser stepconf.InputParser, pathChecker pathutil.PathChecker, logger log.Logger) (*Configs, error) {
 	var inputs Inputs
 	if err := inputParser.Parse(&inputs); err != nil {
 		return nil, fmt.Errorf("issue with input: %s", err)
