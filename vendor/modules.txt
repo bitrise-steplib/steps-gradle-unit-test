@@ -1,19 +1,39 @@
+# github.com/bitrise-io/go-android/v2 v2.0.0-alpha.11
+## explicit; go 1.22
+github.com/bitrise-io/go-android/v2/gradle
 # github.com/bitrise-io/go-steputils/v2 v2.0.0-alpha.37
 ## explicit; go 1.17
 github.com/bitrise-io/go-steputils/v2/export
 github.com/bitrise-io/go-steputils/v2/stepconf
 # github.com/bitrise-io/go-utils v1.0.15
 ## explicit; go 1.13
+github.com/bitrise-io/go-utils/colorstring
 github.com/bitrise-io/go-utils/command
+github.com/bitrise-io/go-utils/log
 github.com/bitrise-io/go-utils/pathutil
+github.com/bitrise-io/go-utils/sliceutil
 github.com/bitrise-io/go-utils/ziputil
-# github.com/bitrise-io/go-utils/v2 v2.0.0-alpha.23
+# github.com/bitrise-io/go-utils/v2 v2.0.0-alpha.25
 ## explicit; go 1.17
 github.com/bitrise-io/go-utils/v2/command
 github.com/bitrise-io/go-utils/v2/env
 github.com/bitrise-io/go-utils/v2/log
 github.com/bitrise-io/go-utils/v2/log/colorstring
 github.com/bitrise-io/go-utils/v2/pathutil
+# github.com/bitrise-steplib/bitrise-step-android-unit-test v0.0.0-20250804073745-3019f21819f5
+## explicit; go 1.21
+github.com/bitrise-steplib/bitrise-step-android-unit-test/output
+github.com/bitrise-steplib/bitrise-step-android-unit-test/testaddon
+# github.com/bitrise-steplib/steps-deploy-to-bitrise-io v0.0.0-20250728133502-5ac534b2874f
+## explicit; go 1.20
+github.com/bitrise-steplib/steps-deploy-to-bitrise-io/test/converters/junitxml
+github.com/bitrise-steplib/steps-deploy-to-bitrise-io/test/testreport
 # github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
 ## explicit
 github.com/kballard/go-shellquote
+# github.com/pkg/errors v0.9.1
+## explicit
+github.com/pkg/errors
+# github.com/ryanuber/go-glob v1.0.0
+## explicit
+github.com/ryanuber/go-glob

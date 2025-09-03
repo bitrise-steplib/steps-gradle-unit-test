@@ -4,14 +4,19 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
+	"time"
 
+	"github.com/bitrise-io/go-android/v2/gradle"
 	"github.com/bitrise-io/go-steputils/v2/export"
 	"github.com/bitrise-io/go-steputils/v2/stepconf"
 	"github.com/bitrise-io/go-utils/v2/command"
 	"github.com/bitrise-io/go-utils/v2/env"
 	"github.com/bitrise-io/go-utils/v2/log"
 	"github.com/bitrise-io/go-utils/v2/pathutil"
+	"github.com/bitrise-steplib/bitrise-step-android-unit-test/output"
 	"github.com/kballard/go-shellquote"
+	glob "github.com/ryanuber/go-glob"
 )
 
 type Inputs struct {
@@ -19,6 +24,7 @@ type Inputs struct {
 	TestTasks             string `env:"test_task,required"`
 	GradlewCommandFlags   string `env:"gradlew_command_flags"`
 	GradleBuildScriptPath string `env:"gradle_build_script_path"`
+	TestResultDir         string `env:"BITRISE_TEST_RESULT_DIR"`
 }
 
 type Configs struct {
@@ -27,6 +33,7 @@ type Configs struct {
 	TestTasks                     []string
 	GradlewCommandFlags           []string
 	GradleBuildScriptRelativePath string
+	TestResultDir                 string
 }
 
 func main() {
@@ -51,7 +58,10 @@ func main() {
 
 	fmt.Println()
 	logger.Infof("Running gradle task...")
-	if err := runGradleTask(cmdFactory, logger, config.ProjectRootDir, config.TestTasks, config.GradleBuildScriptRelativePath, config.GradlewCommandFlags); err != nil {
+	taskStartTime := time.Now()
+	err = runGradleTask(cmdFactory, logger, config.ProjectRootDir, config.TestTasks, config.GradleBuildScriptRelativePath, config.GradlewCommandFlags)
+	taskFinishTime := time.Now()
+	if err != nil {
 		logger.Errorf("Gradle task failed: %s", err)
 
 		if err := outputExporter.ExportOutput("BITRISE_GRADLE_TEST_RESULT", "failed"); err != nil {
@@ -61,8 +71,16 @@ func main() {
 		os.Exit(1)
 	}
 
+	// TODO: export test results, artifacts, etc. even after failed gradle task
+	// ./composeApp/build/test-results/testDebugUnitTest/TEST-io.bitrise.taskman.AppTest.xml
+	// ./shared/build/test-results/testDebugUnitTest/TEST-io.bitrise.taskman.search.GrepTest.xml
+
 	if err := outputExporter.ExportOutput("BITRISE_GRADLE_TEST_RESULT", "succeeded"); err != nil {
 		logger.Warnf("Failed to export environment: %s: %s", "BITRISE_GRADLE_TEST_RESULT", err)
+	}
+
+	if err := exportTestResults(config.ProjectRootDir, taskStartTime, taskFinishTime, config.TestResultDir); err != nil {
+		logger.Warnf("Failed to export test results: %s", err)
 	}
 }
 
@@ -108,6 +126,7 @@ func processConfig(inputParser stepconf.InputParser, pathChecker pathutil.PathCh
 		TestTasks:                     taskSlice,
 		GradlewCommandFlags:           flagSlice,
 		GradleBuildScriptRelativePath: inputs.GradleBuildScriptPath,
+		TestResultDir:                 inputs.TestResultDir,
 	}, nil
 }
 
@@ -129,6 +148,77 @@ func runGradleTask(cmdFactory command.Factory, logger log.Logger, workDir string
 	fmt.Println()
 
 	return cmd.Run()
+}
+
+func exportTestResults(projectRootDir string, taskStartTime, taskFinishTime time.Time, testResultsDir string) error {
+	// Find all files matching pattern **/build/test-results/test*/TEST-*.xml
+	var testResults []gradle.Artifact
+
+	err := filepath.WalkDir(projectRootDir, func(path string, entry os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if entry.IsDir() {
+			return nil
+		}
+		if !glob.Glob("*/build/test-results/test*/TEST-*.xml", path) {
+			return nil
+		}
+		info, err := entry.Info()
+		if err != nil {
+			return err
+		}
+		if info.ModTime().Before(taskStartTime) || info.ModTime().After(taskFinishTime) {
+			return nil
+		}
+
+		// ./composeApp/build/test-results/testDebugUnitTest/TEST-io.bitrise.taskman.AppTest.xml
+		// -> composeApp-testDebugUnitTest-TEST-io.bitrise.taskman.AppTest.xml
+		artifactName := filepath.Base(path)
+		idx := strings.Index(path, "/build/test-results/")
+		if idx > 0 {
+			modulePath := path[:idx]
+
+			taskName := ""
+			prefixToTrim := path[:idx+len("/build/test-results/")]
+			trimmedPath := strings.TrimPrefix(path, prefixToTrim)
+			idx := strings.Index(trimmedPath, "/")
+			if idx > 0 {
+				taskName = trimmedPath[:idx]
+			}
+
+			if taskName != "" {
+				artifactName = taskName + "-" + artifactName
+			}
+			if modulePath != "" {
+				artifactName = modulePath + "-" + artifactName
+			}
+		}
+
+		testResults = append(testResults, gradle.Artifact{
+			Name: artifactName,
+			Path: filepath.Join(projectRootDir, path),
+		})
+		return nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	logger := log.NewLogger()
+	exporter := output.NewExporter(env.NewRepository(), pathutil.NewPathChecker(), logger)
+	exportedResultXMLs, err := exporter.ExportTestAddonArtifacts(testResultsDir, testResults)
+	if err != nil {
+		logger.Warnf("Failed to export test XML test results, error: %s", err)
+	}
+
+	if err := exporter.ExportFlakyTestsEnvVar(exportedResultXMLs); err != nil {
+		logger.Warnf("Failed to export flaky tests env var, error: %s", err)
+	}
+
+	return nil
+
 }
 
 func failF(logger log.Logger, format string, args ...interface{}) {
