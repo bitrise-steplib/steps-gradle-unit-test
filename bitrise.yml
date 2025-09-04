@@ -105,13 +105,43 @@ step_bundles:
     - path::./:
         inputs:
         - gradle_build_script_path: $gradle_build_script_path
-    - script:
-        is_always_run: true
-        inputs:
-        - content: |-
-            echo "BITRISE_GRADLE_TEST_RESULT: $BITRISE_GRADLE_TEST_RESULT"
+    - bundle::check_outputs: { }
     - change-workdir:
         is_always_run: true
         inputs:
         - path: $ORIG_BITRISE_SOURCE_DIR
         - is_create_path: true
+
+  check_outputs:
+    steps:
+    - script:
+        title: Check BITRISE_GRADLE_TEST_RESULT
+        is_always_run: true
+        inputs:
+        - content: |-
+            #!/bin/env bash
+
+            echo "BITRISE_GRADLE_TEST_RESULT: $BITRISE_GRADLE_TEST_RESULT"
+            if [[ $EXPECT_TEST_FAILURE == "true" ]] ; then
+              if [[ "$BITRISE_GRADLE_TEST_RESULT" != "failed" ]] ; then
+                echo "Invalid BITRISE_GRADLE_TEST_RESULT value ($BITRISE_GRADLE_TEST_RESULT), should be: failed"
+                exit 1
+              fi
+            else
+              if [[ "$BITRISE_GRADLE_TEST_RESULT" != "succeeded" ]] ; then
+                echo "Invalid BITRISE_GRADLE_TEST_RESULT value ($BITRISE_GRADLE_TEST_RESULT), should be: succeeded"
+                exit 1
+              fi
+            fi
+    - script:
+        title: Check testing addon support
+        is_always_run: true
+        inputs:
+        - content: |-
+            #!/bin/env bash
+
+            # Check and REMOVE test-info.json
+            if [ $(find ${BITRISE_TEST_DEPLOY_DIR} -type f -delete -print -regex "${BITRISE_TEST_DEPLOY_DIR}/.*/${BITRISE_SCHEME}/test-info\.json" | grep -q .) ]; then
+              echo "${BITRISE_TEST_DEPLOY_DIR} does not contain test-info.json."
+              exit 1
+            fi
