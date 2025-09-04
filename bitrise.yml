@@ -19,6 +19,26 @@ workflows:
     steps:
     - git::https://github.com/bitrise-steplib/steps-check.git: { }
 
+  sample:
+    steps:
+    - script:
+        inputs:
+        - content: rm -rf "${ORIG_BITRISE_SOURCE_DIR}/_tmp"
+    - change-workdir:
+        is_always_run: true
+        inputs:
+        - path: ${ORIG_BITRISE_SOURCE_DIR}/_tmp
+        - is_create_path: true
+    - git::https://github.com/bitrise-steplib/bitrise-step-simple-git-clone.git@master:
+        inputs:
+        - repository_url: https://github.com/bitrise-samples/android-gradle-kotlin-dsl.git
+        - branch: master
+        - clone_into_dir: ./
+    - path::./:
+        inputs:
+        - project_root_dir: ./
+#        - gradle_build_script_path: ./build.gradle.kts
+
   test:
     description: Test Gradle Groovy DSL support.
     steps:

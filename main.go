@@ -169,7 +169,7 @@ func exportTestResults(projectRootDir string, taskStartTime, taskFinishTime time
 
 		testResults = append(testResults, gradle.Artifact{
 			Name: testResultName(path, projectRootDir),
-			Path: filepath.Join(projectRootDir, path),
+			Path: path,
 		})
 		return nil
 	})
@@ -197,6 +197,11 @@ testResultName converts the test result file path to artifact name by following 
 	to name: composeApp-testDebugUnitTest-TEST-io.bitrise.taskman.AppTest.xml
 */
 func testResultName(testResultPath, projectRootDir string) string {
+	testResultPath = strings.TrimPrefix(testResultPath, ".")
+	projectRootDir = strings.TrimPrefix(projectRootDir, ".")
+	testResultPath = strings.TrimPrefix(testResultPath, "/")
+	projectRootDir = strings.TrimPrefix(projectRootDir, "/")
+
 	testResultRelPath := strings.TrimPrefix(testResultPath, projectRootDir)
 	testResultRelPath = strings.TrimPrefix(testResultRelPath, "/")
 

@@ -31,6 +31,12 @@ func Test_testResultName(t *testing.T) {
 			projectRootDir: "./",
 			want:           "server-composeApp-testDebugUnitTest-TEST-io.bitrise.taskman.AppTest.xml",
 		},
+		{
+			name:           "Relative project root dir and test result path with different syntax",
+			testResultPath: "_tmp/composeApp/build/test-results/testDebugUnitTest/TEST-io.bitrise.taskman.AppTest.xml",
+			projectRootDir: "./_tmp",
+			want:           "composeApp-testDebugUnitTest-TEST-io.bitrise.taskman.AppTest.xml",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
