@@ -72,7 +72,7 @@ func main() {
 			logger.Warnf("Failed to export environment: %s: %s", "BITRISE_GRADLE_TEST_RESULT", err)
 		}
 
-		failF(logger, "Gradle task failed: %s", err)
+		failF(logger, "Gradle task failed: %s", taskErr)
 	}
 
 	if err := outputExporter.ExportOutput("BITRISE_GRADLE_TEST_RESULT", "succeeded"); err != nil {
