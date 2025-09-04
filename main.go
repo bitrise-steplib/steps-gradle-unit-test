@@ -44,6 +44,7 @@ func main() {
 	pathChecker := pathutil.NewPathChecker()
 	cmdFactory := command.NewFactory(envRepo)
 	outputExporter := export.NewExporter(cmdFactory)
+	testResultExporter := output.NewExporter(envRepo, pathChecker, logger)
 
 	// Parse inputs
 	config, err := processConfig(inputParser, pathChecker, logger)
@@ -59,28 +60,23 @@ func main() {
 	fmt.Println()
 	logger.Infof("Running gradle task...")
 	taskStartTime := time.Now()
-	err = runGradleTask(cmdFactory, logger, config.ProjectRootDir, config.TestTasks, config.GradleBuildScriptRelativePath, config.GradlewCommandFlags)
+	taskErr := runGradleTask(cmdFactory, logger, config.ProjectRootDir, config.TestTasks, config.GradleBuildScriptRelativePath, config.GradlewCommandFlags)
 	taskFinishTime := time.Now()
-	if err != nil {
-		logger.Errorf("Gradle task failed: %s", err)
 
+	if err := exportTestResults(config.ProjectRootDir, taskStartTime, taskFinishTime, config.TestResultDir, logger, testResultExporter); err != nil {
+		logger.Warnf("Failed to export test results: %s", err)
+	}
+
+	if taskErr != nil {
 		if err := outputExporter.ExportOutput("BITRISE_GRADLE_TEST_RESULT", "failed"); err != nil {
 			logger.Warnf("Failed to export environment: %s: %s", "BITRISE_GRADLE_TEST_RESULT", err)
 		}
 
-		os.Exit(1)
+		failF(logger, "Gradle task failed: %s", err)
 	}
-
-	// TODO: export test results, artifacts, etc. even after failed gradle task
-	// ./composeApp/build/test-results/testDebugUnitTest/TEST-io.bitrise.taskman.AppTest.xml
-	// ./shared/build/test-results/testDebugUnitTest/TEST-io.bitrise.taskman.search.GrepTest.xml
 
 	if err := outputExporter.ExportOutput("BITRISE_GRADLE_TEST_RESULT", "succeeded"); err != nil {
 		logger.Warnf("Failed to export environment: %s: %s", "BITRISE_GRADLE_TEST_RESULT", err)
-	}
-
-	if err := exportTestResults(config.ProjectRootDir, taskStartTime, taskFinishTime, config.TestResultDir); err != nil {
-		logger.Warnf("Failed to export test results: %s", err)
 	}
 }
 
@@ -150,10 +146,9 @@ func runGradleTask(cmdFactory command.Factory, logger log.Logger, workDir string
 	return cmd.Run()
 }
 
-func exportTestResults(projectRootDir string, taskStartTime, taskFinishTime time.Time, testResultsDir string) error {
-	// Find all files matching pattern **/build/test-results/test*/TEST-*.xml
+// exportTestResults finds all files matching pattern **/build/test-results/test*/TEST-*.xml
+func exportTestResults(projectRootDir string, taskStartTime, taskFinishTime time.Time, testResultsDir string, logger log.Logger, exporter output.Exporter) error {
 	var testResults []gradle.Artifact
-
 	err := filepath.WalkDir(projectRootDir, func(path string, entry os.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -172,31 +167,8 @@ func exportTestResults(projectRootDir string, taskStartTime, taskFinishTime time
 			return nil
 		}
 
-		// ./composeApp/build/test-results/testDebugUnitTest/TEST-io.bitrise.taskman.AppTest.xml
-		// -> composeApp-testDebugUnitTest-TEST-io.bitrise.taskman.AppTest.xml
-		artifactName := filepath.Base(path)
-		idx := strings.Index(path, "/build/test-results/")
-		if idx > 0 {
-			modulePath := path[:idx]
-
-			taskName := ""
-			prefixToTrim := path[:idx+len("/build/test-results/")]
-			trimmedPath := strings.TrimPrefix(path, prefixToTrim)
-			idx := strings.Index(trimmedPath, "/")
-			if idx > 0 {
-				taskName = trimmedPath[:idx]
-			}
-
-			if taskName != "" {
-				artifactName = taskName + "-" + artifactName
-			}
-			if modulePath != "" {
-				artifactName = modulePath + "-" + artifactName
-			}
-		}
-
 		testResults = append(testResults, gradle.Artifact{
-			Name: artifactName,
+			Name: testResultName(path, projectRootDir),
 			Path: filepath.Join(projectRootDir, path),
 		})
 		return nil
@@ -206,8 +178,6 @@ func exportTestResults(projectRootDir string, taskStartTime, taskFinishTime time
 		return err
 	}
 
-	logger := log.NewLogger()
-	exporter := output.NewExporter(env.NewRepository(), pathutil.NewPathChecker(), logger)
 	exportedResultXMLs, err := exporter.ExportTestAddonArtifacts(testResultsDir, testResults)
 	if err != nil {
 		logger.Warnf("Failed to export test XML test results, error: %s", err)
@@ -218,7 +188,43 @@ func exportTestResults(projectRootDir string, taskStartTime, taskFinishTime time
 	}
 
 	return nil
+}
 
+/*
+testResultName converts the test result file path to artifact name by following rules:
+
+	from path: ./composeApp/build/test-results/testDebugUnitTest/TEST-io.bitrise.taskman.AppTest.xml
+	to name: composeApp-testDebugUnitTest-TEST-io.bitrise.taskman.AppTest.xml
+*/
+func testResultName(testResultPath, projectRootDir string) string {
+	testResultRelPath := strings.TrimPrefix(testResultPath, projectRootDir)
+	testResultRelPath = strings.TrimPrefix(testResultRelPath, "/")
+
+	artifactName := filepath.Base(testResultRelPath)
+	idx := strings.Index(testResultRelPath, "/build/test-results/")
+	if idx < 1 {
+		return artifactName
+	}
+
+	modulePath := testResultRelPath[:idx]
+	modulePath = strings.Replace(modulePath, "/", "-", -1)
+
+	taskName := ""
+	prefixToTrim := testResultRelPath[:idx+len("/build/test-results/")]
+	trimmedPath := strings.TrimPrefix(testResultRelPath, prefixToTrim)
+	i := strings.Index(trimmedPath, "/")
+	if i > 0 {
+		taskName = trimmedPath[:i]
+	}
+
+	if taskName != "" {
+		artifactName = taskName + "-" + artifactName
+	}
+	if modulePath != "" {
+		artifactName = modulePath + "-" + artifactName
+	}
+
+	return artifactName
 }
 
 func failF(logger log.Logger, format string, args ...interface{}) {
