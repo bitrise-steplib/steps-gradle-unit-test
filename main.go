@@ -207,7 +207,7 @@ func testResultName(testResultPath, projectRootDir string) string {
 
 	artifactName := filepath.Base(testResultRelPath)
 	idx := strings.Index(testResultRelPath, "/build/test-results/")
-	if idx < 1 {
+	if idx == -1 {
 		return artifactName
 	}
 
