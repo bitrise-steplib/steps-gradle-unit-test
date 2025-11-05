@@ -40,6 +40,13 @@ support_url: https://github.com/bitrise-io/steps-gradle-unit-test/issues
 
 project_type_tags:
 - android
+- cordova
+- flutter
+- ionic
+- java
+- kotlin-multiplatform
+- react-native
+
 type_tags:
 - test
 
