@@ -40,6 +40,13 @@ support_url: https://github.com/bitrise-io/steps-gradle-unit-test/issues
 
 project_type_tags:
 - android
+- cordova
+- flutter
+- ionic
+- java
+- kotlin-multiplatform
+- react-native
+
 type_tags:
 - test
 
@@ -69,7 +76,7 @@ inputs:
   opts:
     title: Additional flags
     summary: Flags to pass to the executed gradlew command.
-    description: |
+    description: |-
       Flags to pass to the executed gradlew command.
       For example, you can use `--tests='*.MyTestClass'` to run a specific test class.
 - gradle_build_script_path:
@@ -84,6 +91,7 @@ outputs:
 - BITRISE_GRADLE_TEST_RESULT:
   opts:
     title: Result of the tests (`succeeded` or `failed`).
+    description: The result of the tests executed by this Step.
     value_options:
     - succeeded
     - failed
