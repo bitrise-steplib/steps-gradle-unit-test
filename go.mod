@@ -3,10 +3,10 @@ module github.com/bitrise-steplib/steps-gradle-unit-test
 go 1.22
 
 require (
-	github.com/bitrise-io/go-android/v2 v2.0.0-alpha.11
-	github.com/bitrise-io/go-steputils/v2 v2.0.0-alpha.37
-	github.com/bitrise-io/go-utils/v2 v2.0.0-alpha.25
-	github.com/bitrise-steplib/bitrise-step-android-unit-test v0.0.0-20250804073745-3019f21819f5
+	github.com/bitrise-io/go-android/v2 v2.0.0-alpha.14.0.20260312091235-b71e2a25d415
+	github.com/bitrise-io/go-steputils/v2 v2.0.0-alpha.48.0.20260312091018-7447bc60506b
+	github.com/bitrise-io/go-utils/v2 v2.0.0-alpha.33
+	github.com/bitrise-steplib/bitrise-step-android-unit-test v0.0.0-20260312130517-daea9ccf3ad8
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
 	github.com/ryanuber/go-glob v1.0.0
 	github.com/stretchr/testify v1.11.1
@@ -14,9 +14,9 @@ require (
 
 require (
 	github.com/bitrise-io/go-utils v1.0.15 // indirect
-	github.com/bitrise-steplib/steps-deploy-to-bitrise-io v0.0.0-20250728133502-5ac534b2874f // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
+	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
+	github.com/hashicorp/go-retryablehttp v0.7.7 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
