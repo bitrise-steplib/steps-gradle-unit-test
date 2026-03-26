@@ -43,7 +43,8 @@ func main() {
 	inputParser := stepconf.NewInputParser(envRepo)
 	pathChecker := pathutil.NewPathChecker()
 	cmdFactory := command.NewFactory(envRepo)
-	outputExporter := export.NewExporter(cmdFactory)
+	fileManager := export.NewFileManager()
+	outputExporter := export.NewExporter(cmdFactory, fileManager)
 	testResultExporter := output.NewExporter(envRepo, pathChecker, logger)
 
 	// Parse inputs
