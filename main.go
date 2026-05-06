@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/bitrise-io/bitrise-build-cache-cli/v2/pkg/reactnative/wrap"
 	"github.com/bitrise-io/go-android/v2/gradle"
 	"github.com/bitrise-io/go-steputils/v2/export"
 	"github.com/bitrise-io/go-steputils/v2/stepconf"
@@ -135,7 +137,13 @@ func runGradleTask(cmdFactory command.Factory, logger log.Logger, workDir string
 	args = append(args, tasks...)
 	args = append(args, flags...)
 
-	cmd := cmdFactory.Create("./gradlew", args, &command.Opts{
+	det := wrap.Detect(context.Background(), wrap.DetectParams{Logger: logger})
+	if det.ReactNativeEnabled {
+		logger.Infof("Bitrise Build Cache: React Native cache active — wrapping gradle with %s", det.CLIPath)
+	}
+	name, wrappedArgs := wrap.Wrap(det, "./gradlew", args)
+
+	cmd := cmdFactory.Create(name, wrappedArgs, &command.Opts{
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
 		Dir:    workDir,
