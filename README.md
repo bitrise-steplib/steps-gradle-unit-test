@@ -22,6 +22,12 @@ To configure the Step:
 1. (Optional) Add any flags you want to pass to the executed gradlew command in the **Additional flags** input. For example, you can use `--tests='*.MyTestClass'` to run a specific test class.
 1. (Optional) You can set the file path to a `build.gradle` file for the Step in the **Path to the Gradle build script to use** input.
 
+### Attachments
+
+The Step also exports the screenshots, recordings and logs that belong to its test cases, so they show up under the test in the Test Reports. An attachment belongs to a test case if its file name follows the `<classname>__<name>[__run<k>]__<label>.<ext>` convention, for example `com.example.LoginTest__emptyState__1.png`.
+
+The Step looks for these files under the **Project root directory**. Files tracked by git, such as committed reference images, are never exported.
+
 ### Troubleshooting
 
 If you receive an error that Gradle Wrapper (gradlew) is required, make sure to generate one if you don't have one already. You can read

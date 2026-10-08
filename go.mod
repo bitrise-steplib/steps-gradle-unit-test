@@ -5,8 +5,8 @@ go 1.24.0
 require (
 	github.com/bitrise-io/bitrise-build-cache-cli/v2 v2.6.0
 	github.com/bitrise-io/go-android/v2 v2.0.0-alpha.15
-	github.com/bitrise-io/go-steputils/v2 v2.0.0-alpha.50
-	github.com/bitrise-io/go-utils/v2 v2.0.0-alpha.34
+	github.com/bitrise-io/go-steputils/v2 v2.0.0-alpha.61
+	github.com/bitrise-io/go-utils/v2 v2.0.0-alpha.39
 	github.com/bitrise-steplib/bitrise-step-android-unit-test v0.0.0-20260326090439-805f654006f2
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
 	github.com/ryanuber/go-glob v1.0.0
@@ -30,3 +30,5 @@ require (
 	golang.org/x/sys v0.41.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/bitrise-steplib/bitrise-step-android-unit-test => github.com/violapeter/bitrise-step-android-unit-test v0.0.0-20261008092002-5914fcc01c67
