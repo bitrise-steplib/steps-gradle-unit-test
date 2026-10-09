@@ -26,6 +26,9 @@ workflows:
 
   test_no_root_build_script_file:
     description: Test without explicit Gradle build script path.
+    envs:
+    # The sample library has no unit tests, so there are no test results to export
+    - EXPECT_TEST_RESULTS: "false"
     steps:
     - bundle::run_step_test:
         inputs:
@@ -126,9 +129,23 @@ step_bundles:
         inputs:
         - content: |-
             #!/bin/env bash
+            set -eo pipefail
 
-            # Check and REMOVE test-info.json
-            if [ $(find ${BITRISE_TEST_DEPLOY_DIR} -type f -delete -print -regex "${BITRISE_TEST_DEPLOY_DIR}/.*/${BITRISE_SCHEME}/test-info\.json" | grep -q .) ]; then
-              echo "${BITRISE_TEST_DEPLOY_DIR} does not contain test-info.json."
+            # The Step exports each test result with a test-info.json descriptor for the testing add-on
+            descriptors=$(find "$BITRISE_TEST_DEPLOY_DIR" -type f -name test-info.json)
+            if [[ "$EXPECT_TEST_RESULTS" == "false" ]] ; then
+              if [[ -n "$descriptors" ]] ; then
+                echo "$BITRISE_TEST_DEPLOY_DIR should not contain test-info.json, found:"
+                echo "$descriptors"
+                exit 1
+              fi
+              exit 0
+            fi
+            if [[ -z "$descriptors" ]] ; then
+              echo "$BITRISE_TEST_DEPLOY_DIR does not contain test-info.json."
               exit 1
             fi
+            echo "$descriptors"
+
+            # Remove the descriptors, so the next test case cannot pass on this one's results
+            find "$BITRISE_TEST_DEPLOY_DIR" -type f -name test-info.json -delete
