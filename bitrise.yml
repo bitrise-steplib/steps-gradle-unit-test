@@ -1,23 +1,23 @@
 format_version: "20"
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 
+include:
+- repository: steps-check
+  branch: master
+  path: steps.bitrise.yml
+
 app:
   envs:
   - ORIG_BITRISE_SOURCE_DIR: $BITRISE_SOURCE_DIR
 
 workflows:
-  ci:
-    before_run:
-    - check
-    after_run:
-    - test
-    - test-no-root-build-script-file
-    - test-gradle-kts
-    - test-project-in-sub-dir
+  # check: included from steps-check/steps.bitrise.yml
 
-  check:
+  e2e:
     steps:
-    - git::https://github.com/bitrise-steplib/steps-check.git: { }
+    - git::https://github.com/bitrise-steplib/steps-check.git:
+        inputs:
+        - workflow: e2e
 
   sample:
     steps:
@@ -37,135 +37,7 @@ workflows:
     - path::./:
         inputs:
         - project_root_dir: ./
-#        - gradle_build_script_path: ./build.gradle.kts
-
-  test:
-    description: Test Gradle Groovy DSL support.
-    steps:
-    - bundle::run_step_test:
-        inputs:
-        - test_app_repo_url: https://github.com/bitrise-samples/sample-apps-android-sdk22.git
-        - test_app_branch: master
-        - gradle_build_script_path: ./build.gradle
-
-  test-gradle-kts:
-    description: Test Gradle Kotlin DSL support.
-    steps:
-    - bundle::run_step_test:
-        inputs:
-        - test_app_repo_url: https://github.com/bitrise-samples/android-gradle-kotlin-dsl.git
-        - test_app_branch: master
-        - gradle_build_script_path: ./build.gradle.kts
-
-  test-no-root-build-script-file:
-    description: Test without explicit Gradle build script path.
-    steps:
-    - bundle::run_step_test:
-        inputs:
-        - test_app_repo_url: https://github.com/bitrise-samples/android-empty-library.git
-        - test_app_branch: master
-
-  test-project-in-sub-dir:
-    description: Test Gradle project placed in a sub directory.
-    steps:
-    - script:
-        inputs:
-        - content: rm -rf "${ORIG_BITRISE_SOURCE_DIR}/_tmp"
-    - change-workdir:
-        is_always_run: true
-        inputs:
-        - path: ${ORIG_BITRISE_SOURCE_DIR}/_tmp/subdir
-        - is_create_path: true
-    - git::https://github.com/bitrise-steplib/bitrise-step-simple-git-clone.git@master:
-        inputs:
-        - repository_url: https://github.com/bitrise-samples/android-gradle-kotlin-dsl.git
-        - branch: master
-        - clone_into_dir: ./
-    - change-workdir:
-        is_always_run: true
-        inputs:
-        - path: ${ORIG_BITRISE_SOURCE_DIR}/_tmp
-        - is_create_path: true
-    - path::./:
-        inputs:
-        - project_root_dir: ./subdir
-        - gradle_build_script_path: ./build.gradle.kts
-        - test_task: testDebugUnitTest
-    - script:
-        is_always_run: true
-        inputs:
-        - content: |-
-            echo "BITRISE_GRADLE_TEST_RESULT: $BITRISE_GRADLE_TEST_RESULT"
-    - change-workdir:
-        is_always_run: true
-        inputs:
-        - path: $ORIG_BITRISE_SOURCE_DIR
-        - is_create_path: true
 
   generate_readme:
     steps:
-    - git::https://github.com/bitrise-steplib/steps-readme-generator.git@main: { }
-
-step_bundles:
-  run_step_test:
-    inputs:
-    - test_app_repo_url:
-    - test_app_branch:
-    - gradle_build_script_path:
-    steps:
-    - script:
-        inputs:
-        - content: rm -rf "${ORIG_BITRISE_SOURCE_DIR}/_tmp"
-    - change-workdir:
-        is_always_run: true
-        inputs:
-        - path: ${ORIG_BITRISE_SOURCE_DIR}/_tmp
-        - is_create_path: true
-    - git::https://github.com/bitrise-steplib/bitrise-step-simple-git-clone.git@master:
-        inputs:
-        - repository_url: $test_app_repo_url
-        - branch: $test_app_branch
-        - clone_into_dir: ./
-    - path::./:
-        inputs:
-        - gradle_build_script_path: $gradle_build_script_path
-    - bundle::check_outputs: { }
-    - change-workdir:
-        is_always_run: true
-        inputs:
-        - path: $ORIG_BITRISE_SOURCE_DIR
-        - is_create_path: true
-
-  check_outputs:
-    steps:
-    - script:
-        title: Check BITRISE_GRADLE_TEST_RESULT
-        is_always_run: true
-        inputs:
-        - content: |-
-            #!/bin/env bash
-
-            echo "BITRISE_GRADLE_TEST_RESULT: $BITRISE_GRADLE_TEST_RESULT"
-            if [[ $EXPECT_TEST_FAILURE == "true" ]] ; then
-              if [[ "$BITRISE_GRADLE_TEST_RESULT" != "failed" ]] ; then
-                echo "Invalid BITRISE_GRADLE_TEST_RESULT value ($BITRISE_GRADLE_TEST_RESULT), should be: failed"
-                exit 1
-              fi
-            else
-              if [[ "$BITRISE_GRADLE_TEST_RESULT" != "succeeded" ]] ; then
-                echo "Invalid BITRISE_GRADLE_TEST_RESULT value ($BITRISE_GRADLE_TEST_RESULT), should be: succeeded"
-                exit 1
-              fi
-            fi
-    - script:
-        title: Check testing addon support
-        is_always_run: true
-        inputs:
-        - content: |-
-            #!/bin/env bash
-
-            # Check and REMOVE test-info.json
-            if [ $(find ${BITRISE_TEST_DEPLOY_DIR} -type f -delete -print -regex "${BITRISE_TEST_DEPLOY_DIR}/.*/${BITRISE_SCHEME}/test-info\.json" | grep -q .) ]; then
-              echo "${BITRISE_TEST_DEPLOY_DIR} does not contain test-info.json."
-              exit 1
-            fi
+    - git::https://github.com/bitrise-steplib/steps-readme-generator.git@main: {}

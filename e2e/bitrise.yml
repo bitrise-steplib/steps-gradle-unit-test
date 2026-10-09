@@ -1,0 +1,146 @@
+format_version: "20"
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+
+app:
+  envs:
+  - ORIG_BITRISE_SOURCE_DIR: $BITRISE_SOURCE_DIR
+
+workflows:
+  test_groovy_dsl:
+    description: Test Gradle Groovy DSL support.
+    steps:
+    - bundle::run_step_test:
+        inputs:
+        - test_app_repo_url: https://github.com/bitrise-samples/sample-apps-android-sdk22.git
+        - test_app_branch: master
+        - gradle_build_script_path: ./build.gradle
+
+  test_kotlin_dsl:
+    description: Test Gradle Kotlin DSL support.
+    steps:
+    - bundle::run_step_test:
+        inputs:
+        - test_app_repo_url: https://github.com/bitrise-samples/android-gradle-kotlin-dsl.git
+        - test_app_branch: master
+        - gradle_build_script_path: ./build.gradle.kts
+
+  test_no_root_build_script_file:
+    description: Test without explicit Gradle build script path.
+    envs:
+    # The sample library has no unit tests, so there are no test results to export
+    - EXPECT_TEST_RESULTS: "false"
+    steps:
+    - bundle::run_step_test:
+        inputs:
+        - test_app_repo_url: https://github.com/bitrise-samples/android-empty-library.git
+        - test_app_branch: master
+
+  test_project_in_sub_dir:
+    description: Test Gradle project placed in a sub directory.
+    steps:
+    - bundle::cleanup: {}
+    - change-workdir:
+        is_always_run: true
+        inputs:
+        - path: ${ORIG_BITRISE_SOURCE_DIR}/_tmp/subdir
+        - is_create_path: true
+    - git::https://github.com/bitrise-steplib/bitrise-step-simple-git-clone.git@master:
+        inputs:
+        - repository_url: https://github.com/bitrise-samples/android-gradle-kotlin-dsl.git
+        - branch: master
+        - clone_into_dir: ./
+    - change-workdir:
+        is_always_run: true
+        inputs:
+        - path: ${ORIG_BITRISE_SOURCE_DIR}/_tmp
+        - is_create_path: true
+    - path::./:
+        inputs:
+        - project_root_dir: ./subdir
+        - gradle_build_script_path: ./build.gradle.kts
+        - test_task: testDebugUnitTest
+    - bundle::check_outputs: {}
+    - change-workdir:
+        is_always_run: true
+        inputs:
+        - path: $ORIG_BITRISE_SOURCE_DIR
+        - is_create_path: true
+
+step_bundles:
+  run_step_test:
+    inputs:
+    - test_app_repo_url:
+    - test_app_branch:
+    - gradle_build_script_path:
+    steps:
+    - bundle::cleanup: {}
+    - change-workdir:
+        is_always_run: true
+        inputs:
+        - path: ${ORIG_BITRISE_SOURCE_DIR}/_tmp
+        - is_create_path: true
+    - git::https://github.com/bitrise-steplib/bitrise-step-simple-git-clone.git@master:
+        inputs:
+        - repository_url: $test_app_repo_url
+        - branch: $test_app_branch
+        - clone_into_dir: ./
+    - path::./:
+        inputs:
+        - gradle_build_script_path: $gradle_build_script_path
+    - bundle::check_outputs: {}
+    - change-workdir:
+        is_always_run: true
+        inputs:
+        - path: $ORIG_BITRISE_SOURCE_DIR
+        - is_create_path: true
+
+  cleanup:
+    steps:
+    - script:
+        title: Clean up after previous test cases
+        inputs:
+        - content: |-
+            #!/bin/env bash
+            set -eo pipefail
+
+            rm -rf "${ORIG_BITRISE_SOURCE_DIR}/_tmp"
+            # Remove descriptors exported by a previous test case, so this one cannot pass on its results
+            find "$BITRISE_TEST_DEPLOY_DIR" -type f -name test-info.json -delete
+
+  check_outputs:
+    steps:
+    - script:
+        title: Check BITRISE_GRADLE_TEST_RESULT
+        is_always_run: true
+        inputs:
+        - content: |-
+            #!/bin/env bash
+
+            echo "BITRISE_GRADLE_TEST_RESULT: $BITRISE_GRADLE_TEST_RESULT"
+            if [[ "$BITRISE_GRADLE_TEST_RESULT" != "succeeded" ]] ; then
+              echo "Invalid BITRISE_GRADLE_TEST_RESULT value ($BITRISE_GRADLE_TEST_RESULT), should be: succeeded"
+              exit 1
+            fi
+    - script:
+        title: Check testing addon support
+        is_always_run: true
+        inputs:
+        - content: |-
+            #!/bin/env bash
+            set -eo pipefail
+
+            # The Step exports each test result with a test-info.json descriptor for the testing add-on
+            descriptors=$(find "$BITRISE_TEST_DEPLOY_DIR" -type f -name test-info.json)
+            if [[ "$EXPECT_TEST_RESULTS" == "false" ]] ; then
+              if [[ -n "$descriptors" ]] ; then
+                echo "$BITRISE_TEST_DEPLOY_DIR should not contain test-info.json, found:"
+                echo "$descriptors"
+                exit 1
+              fi
+              exit 0
+            fi
+            if [[ -z "$descriptors" ]] ; then
+              echo "$BITRISE_TEST_DEPLOY_DIR does not contain test-info.json."
+              exit 1
+            fi
+            echo "$descriptors"
