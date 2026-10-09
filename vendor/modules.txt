@@ -15,17 +15,19 @@ github.com/bitrise-io/bitrise-build-cache-cli/v2/pkg/status
 ## explicit; go 1.22
 github.com/bitrise-io/go-android/v2/gradle
 github.com/bitrise-io/go-android/v2/testresult/junitxml
-# github.com/bitrise-io/go-steputils/v2 v2.0.0-alpha.50
+# github.com/bitrise-io/go-steputils/v2 v2.0.0-alpha.61
 ## explicit; go 1.21
 github.com/bitrise-io/go-steputils/v2/export
 github.com/bitrise-io/go-steputils/v2/stepconf
+github.com/bitrise-io/go-steputils/v2/testasset
+github.com/bitrise-io/go-steputils/v2/testattachment
 github.com/bitrise-io/go-steputils/v2/testreport
 # github.com/bitrise-io/go-utils v1.0.15
 ## explicit; go 1.13
 github.com/bitrise-io/go-utils/command
 github.com/bitrise-io/go-utils/pathutil
 github.com/bitrise-io/go-utils/ziputil
-# github.com/bitrise-io/go-utils/v2 v2.0.0-alpha.34
+# github.com/bitrise-io/go-utils/v2 v2.0.0-alpha.39
 ## explicit; go 1.21
 github.com/bitrise-io/go-utils/v2/command
 github.com/bitrise-io/go-utils/v2/env
@@ -36,8 +38,9 @@ github.com/bitrise-io/go-utils/v2/log/colorstring
 github.com/bitrise-io/go-utils/v2/parseutil
 github.com/bitrise-io/go-utils/v2/pathutil
 github.com/bitrise-io/go-utils/v2/retryhttp
-# github.com/bitrise-steplib/bitrise-step-android-unit-test v0.0.0-20260326090439-805f654006f2
-## explicit; go 1.22
+github.com/bitrise-io/go-utils/v2/ziputil
+# github.com/bitrise-steplib/bitrise-step-android-unit-test v0.0.0-20260326090439-805f654006f2 => github.com/violapeter/bitrise-step-android-unit-test v0.0.0-20261008092002-5914fcc01c67
+## explicit; go 1.24.0
 github.com/bitrise-steplib/bitrise-step-android-unit-test/output
 github.com/bitrise-steplib/bitrise-step-android-unit-test/testaddon
 # github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
@@ -103,3 +106,4 @@ golang.org/x/sys/windows
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
+# github.com/bitrise-steplib/bitrise-step-android-unit-test => github.com/violapeter/bitrise-step-android-unit-test v0.0.0-20261008092002-5914fcc01c67

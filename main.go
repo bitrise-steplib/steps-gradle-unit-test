@@ -45,8 +45,7 @@ func main() {
 	inputParser := stepconf.NewInputParser(envRepo)
 	pathChecker := pathutil.NewPathChecker()
 	cmdFactory := command.NewFactory(envRepo)
-	fileManager := export.NewFileManager()
-	outputExporter := export.NewExporter(cmdFactory, fileManager)
+	outputExporter := export.NewDefaultExporter(cmdFactory)
 	testResultExporter := output.NewExporter(envRepo, pathChecker, logger)
 
 	// Parse inputs
@@ -187,7 +186,7 @@ func exportTestResults(projectRootDir string, taskStartTime, taskFinishTime time
 		return err
 	}
 
-	exportedResultXMLs, err := exporter.ExportTestAddonArtifacts(testResultsDir, testResults)
+	exportedResultXMLs, err := exporter.ExportTestAddonArtifacts(testResultsDir, testResults, projectRootDir)
 	if err != nil {
 		logger.Warnf("Failed to export test XML test results, error: %s", err)
 	}
