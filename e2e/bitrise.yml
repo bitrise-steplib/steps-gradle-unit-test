@@ -38,9 +38,7 @@ workflows:
   test_project_in_sub_dir:
     description: Test Gradle project placed in a sub directory.
     steps:
-    - script:
-        inputs:
-        - content: rm -rf "${ORIG_BITRISE_SOURCE_DIR}/_tmp"
+    - bundle::cleanup: {}
     - change-workdir:
         is_always_run: true
         inputs:
@@ -61,11 +59,7 @@ workflows:
         - project_root_dir: ./subdir
         - gradle_build_script_path: ./build.gradle.kts
         - test_task: testDebugUnitTest
-    - script:
-        is_always_run: true
-        inputs:
-        - content: |-
-            echo "BITRISE_GRADLE_TEST_RESULT: $BITRISE_GRADLE_TEST_RESULT"
+    - bundle::check_outputs: {}
     - change-workdir:
         is_always_run: true
         inputs:
@@ -79,9 +73,7 @@ step_bundles:
     - test_app_branch:
     - gradle_build_script_path:
     steps:
-    - script:
-        inputs:
-        - content: rm -rf "${ORIG_BITRISE_SOURCE_DIR}/_tmp"
+    - bundle::cleanup: {}
     - change-workdir:
         is_always_run: true
         inputs:
@@ -102,6 +94,19 @@ step_bundles:
         - path: $ORIG_BITRISE_SOURCE_DIR
         - is_create_path: true
 
+  cleanup:
+    steps:
+    - script:
+        title: Clean up after previous test cases
+        inputs:
+        - content: |-
+            #!/bin/env bash
+            set -eo pipefail
+
+            rm -rf "${ORIG_BITRISE_SOURCE_DIR}/_tmp"
+            # Remove descriptors exported by a previous test case, so this one cannot pass on its results
+            find "$BITRISE_TEST_DEPLOY_DIR" -type f -name test-info.json -delete
+
   check_outputs:
     steps:
     - script:
@@ -112,16 +117,9 @@ step_bundles:
             #!/bin/env bash
 
             echo "BITRISE_GRADLE_TEST_RESULT: $BITRISE_GRADLE_TEST_RESULT"
-            if [[ $EXPECT_TEST_FAILURE == "true" ]] ; then
-              if [[ "$BITRISE_GRADLE_TEST_RESULT" != "failed" ]] ; then
-                echo "Invalid BITRISE_GRADLE_TEST_RESULT value ($BITRISE_GRADLE_TEST_RESULT), should be: failed"
-                exit 1
-              fi
-            else
-              if [[ "$BITRISE_GRADLE_TEST_RESULT" != "succeeded" ]] ; then
-                echo "Invalid BITRISE_GRADLE_TEST_RESULT value ($BITRISE_GRADLE_TEST_RESULT), should be: succeeded"
-                exit 1
-              fi
+            if [[ "$BITRISE_GRADLE_TEST_RESULT" != "succeeded" ]] ; then
+              echo "Invalid BITRISE_GRADLE_TEST_RESULT value ($BITRISE_GRADLE_TEST_RESULT), should be: succeeded"
+              exit 1
             fi
     - script:
         title: Check testing addon support
@@ -146,6 +144,3 @@ step_bundles:
               exit 1
             fi
             echo "$descriptors"
-
-            # Remove the descriptors, so the next test case cannot pass on this one's results
-            find "$BITRISE_TEST_DEPLOY_DIR" -type f -name test-info.json -delete
