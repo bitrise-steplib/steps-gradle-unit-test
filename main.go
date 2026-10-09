@@ -221,7 +221,7 @@ func testResultName(testResultPath, projectRootDir string) string {
 	}
 
 	modulePath := testResultRelPath[:idx]
-	modulePath = strings.Replace(modulePath, "/", "-", -1)
+	modulePath = strings.ReplaceAll(modulePath, "/", "-")
 
 	taskName := ""
 	prefixToTrim := testResultRelPath[:idx+len("/build/test-results/")]
