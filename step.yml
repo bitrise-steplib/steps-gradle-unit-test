@@ -23,6 +23,8 @@ description: |-
 
   The Step looks for these files under the **Project root directory**. Files tracked by git, such as committed reference images, are never exported.
 
+  If a test runs in more than one variant, for example with the default `test` task, its attachments are linked to only one of the variants' test reports. To get them under each variant, run the Step once per variant with **Test task** set to that variant's task, for example `testDebugUnitTest`.
+
   ### Troubleshooting
 
   If you receive an error that Gradle Wrapper (gradlew) is required, make sure to generate one if you don't have one already. You can read
